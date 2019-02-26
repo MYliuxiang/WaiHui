@@ -1,0 +1,51 @@
+//
+//  LoginEmailVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/19.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "LoginEmailVC.h"
+#import "RegistEmailVC.h"
+#import "ForgetPWEmailVC.h"
+
+@interface LoginEmailVC ()
+@property (weak, nonatomic) IBOutlet UITextField *emailField;
+@property (weak, nonatomic) IBOutlet TXLimitedTextField *pwField;
+@property (weak, nonatomic) IBOutlet UILabel *phoneLab;
+@property (weak, nonatomic) IBOutlet UILabel *pwLab;
+@property (weak, nonatomic) IBOutlet UIButton *loginBtn;
+
+@end
+
+@implementation LoginEmailVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.fd_prefersNavigationBarHidden = YES;
+    [self.loginBtn hyb_addCornerRadius:5 size:CGSizeMake(kScreenWidth - 60, 48)];
+
+
+}
+- (IBAction)dismisAC:(id)sender {
+    
+    [self.navigationController popViewControllerAnimated:YES];
+}
+- (IBAction)registAC:(id)sender {
+    
+    RegistEmailVC *vc = [RegistEmailVC new];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (IBAction)forgetAC:(id)sender {
+    
+    ForgetPWEmailVC *vc = [ForgetPWEmailVC new];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (IBAction)longinAC:(id)sender {
+}
+
+@end

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="RegistSuccessVC">
+            <connections>
+                <outlet property="doneBtn" destination="twm-em-Ekg" id="MdU-kg-Q3f"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fLe-dX-ghx">
+                    <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yut-Q5-kgB">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="498"/>
+                            <subviews>
+                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="correct" translatesAutoresizingMaskIntoConstraints="NO" id="vJJ-g5-SGX">
+                                    <rect key="frame" x="166.5" y="120" width="42" height="40"/>
+                                </imageView>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="注册成功！" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5YH-gt-cpZ">
+                                    <rect key="frame" x="101.5" y="180" width="172" height="41"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="34"/>
+                                    <color key="textColor" red="0.2627450980392157" green="0.36078431372549019" blue="0.58431372549019611" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="恭喜您已成功注册本平台账号，如果进行入金、交易等操作，还需开通交易账号" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bAK-Bs-EJG">
+                                    <rect key="frame" x="60.5" y="271" width="254" height="29"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="254" id="fFd-rY-d5I"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <color key="textColor" red="0.66666666666666663" green="0.70196078431372544" blue="0.78823529411764703" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="twm-em-Ekg">
+                                    <rect key="frame" x="30" y="400" width="315" height="48"/>
+                                    <color key="backgroundColor" red="0.26274509800000001" green="0.36078431370000003" blue="0.58431372550000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="48" id="Kru-22-KsH"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
+                                    <state key="normal" title="完成">
+                                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </state>
+                                    <connections>
+                                        <action selector="doneAC:" destination="-1" eventType="touchUpInside" id="alx-Xc-OvT"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstItem="bAK-Bs-EJG" firstAttribute="top" secondItem="5YH-gt-cpZ" secondAttribute="bottom" constant="50" id="1ez-kg-mTD"/>
+                                <constraint firstItem="twm-em-Ekg" firstAttribute="centerX" secondItem="yut-Q5-kgB" secondAttribute="centerX" id="5Wm-y9-ePg"/>
+                                <constraint firstAttribute="trailing" secondItem="twm-em-Ekg" secondAttribute="trailing" constant="30" id="81I-5k-5zV"/>
+                                <constraint firstItem="vJJ-g5-SGX" firstAttribute="centerX" secondItem="yut-Q5-kgB" secondAttribute="centerX" id="BOa-T1-Vy0"/>
+                                <constraint firstItem="bAK-Bs-EJG" firstAttribute="centerX" secondItem="yut-Q5-kgB" secondAttribute="centerX" id="Nt7-rp-bsz"/>
+                                <constraint firstItem="twm-em-Ekg" firstAttribute="leading" secondItem="yut-Q5-kgB" secondAttribute="leading" constant="30" id="QWX-Fw-zis"/>
+                                <constraint firstItem="vJJ-g5-SGX" firstAttribute="top" secondItem="yut-Q5-kgB" secondAttribute="top" constant="120" id="RHm-6y-fMV"/>
+                                <constraint firstItem="twm-em-Ekg" firstAttribute="top" secondItem="bAK-Bs-EJG" secondAttribute="bottom" constant="100" id="Vga-FF-BWh"/>
+                                <constraint firstItem="5YH-gt-cpZ" firstAttribute="top" secondItem="vJJ-g5-SGX" secondAttribute="bottom" constant="20" id="fnV-ce-ayd"/>
+                                <constraint firstAttribute="bottom" secondItem="twm-em-Ekg" secondAttribute="bottom" constant="50" id="prc-OS-l3m"/>
+                                <constraint firstItem="5YH-gt-cpZ" firstAttribute="centerX" secondItem="yut-Q5-kgB" secondAttribute="centerX" id="yth-3K-IUH"/>
+                            </constraints>
+                        </view>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="yut-Q5-kgB" firstAttribute="leading" secondItem="fLe-dX-ghx" secondAttribute="leading" id="7aR-2k-SrE"/>
+                        <constraint firstItem="yut-Q5-kgB" firstAttribute="top" secondItem="fLe-dX-ghx" secondAttribute="top" id="Fhk-vn-yka"/>
+                        <constraint firstAttribute="trailing" secondItem="yut-Q5-kgB" secondAttribute="trailing" id="QGC-4X-Nxl"/>
+                        <constraint firstAttribute="bottom" secondItem="yut-Q5-kgB" secondAttribute="bottom" constant="100" id="XfZ-Ja-N7p"/>
+                        <constraint firstItem="yut-Q5-kgB" firstAttribute="centerX" secondItem="fLe-dX-ghx" secondAttribute="centerX" id="fnb-5L-smP"/>
+                    </constraints>
+                </scrollView>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="fLe-dX-ghx" firstAttribute="trailing" secondItem="Q5M-cg-NOt" secondAttribute="trailing" id="NLw-Zr-WX2"/>
+                <constraint firstItem="fLe-dX-ghx" firstAttribute="top" secondItem="Q5M-cg-NOt" secondAttribute="top" id="Nhn-v8-iTO"/>
+                <constraint firstItem="Q5M-cg-NOt" firstAttribute="bottom" secondItem="fLe-dX-ghx" secondAttribute="bottom" id="ePp-sn-Hyd"/>
+                <constraint firstItem="fLe-dX-ghx" firstAttribute="leading" secondItem="Q5M-cg-NOt" secondAttribute="leading" id="zbM-JZ-aeZ"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="Q5M-cg-NOt"/>
+            <point key="canvasLocation" x="39.200000000000003" y="46.326836581709152"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="correct" width="42" height="40"/>
+    </resources>
+</document>

@@ -1,0 +1,21 @@
+//
+//  AddBankVC.h
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/17.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "BaseViewController.h"
+#import "StartPwCell.h"
+#import "MCPickerView.h"
+#import "MCPickerModel.h"
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface AddBankVC : BaseViewController
+
+@property(nonatomic,strong)BankModel *model;
+@end
+
+NS_ASSUME_NONNULL_END

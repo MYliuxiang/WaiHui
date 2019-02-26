@@ -1,0 +1,190 @@
+//
+//  SafeMangerVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2019/1/4.
+//  Copyright © 2019年 faxian. All rights reserved.
+//
+
+#import "SafeMangerVC.h"
+
+@interface SafeMangerVC ()
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (nonatomic,strong) NSArray *titles;
+
+@end
+
+@implementation SafeMangerVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.title = @"安全管理";
+    self.titles = @[@"登录密码",@"手机号码",@"邮箱"];
+}
+
+#pragma  mark --------UITableView Delegete----------
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.titles.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    static NSString *identifire = @"cellID";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:identifire];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 47.5, kScreenWidth, .5)];
+        view.backgroundColor = [MyColor colorWithHexString:@"#F1F1F8"];
+        [cell.contentView addSubview:view];
+        
+    }
+    
+    cell.textLabel.text = self.titles[indexPath.row];
+    cell.textLabel.font = [UIFont systemFontOfSize:14];
+    cell.textLabel.textColor = [MyColor colorWithHexString:@"#4C5694"];
+    
+    cell.detailTextLabel.font = [UIFont systemFontOfSize:14];
+    if (indexPath.row == 0) {
+        cell.detailTextLabel.text = @"";
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        cell.detailTextLabel.textColor = [MyColor colorWithHexString:@"#747898"];
+
+    }else if (indexPath.row == 1){
+        
+        NSString *phoneStr = [NSString stringWithFormat:@"%@",[LxUserDefaults objectForKey:Phone]];
+        if (phoneStr.length == 0) {
+            cell.detailTextLabel.text = @"未绑定";
+            cell.detailTextLabel.textColor = [MyColor colorWithHexString:@"#F29360"];
+        }else{
+            
+            cell.detailTextLabel.text = [phoneStr stringByReplacingCharactersInRange:NSMakeRange(3, 5)  withString:@"*****"];
+            cell.detailTextLabel.textColor = [MyColor colorWithHexString:@"#747898"];
+        }
+        
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+
+       
+    }else{
+        NSString *emailStr = [NSString stringWithFormat:@"%@",[LxUserDefaults objectForKey:Email]];
+
+        if (emailStr.length == 0) {
+            cell.detailTextLabel.text = @"未绑定";
+            cell.detailTextLabel.textColor = [MyColor colorWithHexString:@"#F29360"];
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+
+        }else{
+            cell.detailTextLabel.text = emailStr;
+            cell.detailTextLabel.textColor = [MyColor colorWithHexString:@"#747898"];
+            cell.accessoryType = UITableViewCellAccessoryNone;
+        }
+        
+    }
+    
+    
+    return cell;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 48;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    
+    return 10;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.1;
+    
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 10)];
+    view.backgroundColor = [MyColor colorWithHexString:@"#F7F9FE"];
+    return view;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    NSString *emailStr = [NSString stringWithFormat:@"%@",[LxUserDefaults objectForKey:Email]];
+    NSString *phoneStr = [NSString stringWithFormat:@"%@",[LxUserDefaults objectForKey:Phone]];
+
+    if (indexPath.row == 0) {
+        //重置密码
+        if(phoneStr.length == 0){
+            MyTipAlert *alert = [[MyTipAlert alloc] initWithTipAlertWithTitle:@"个人信息提示" contentStr:@"您的手机号码尚未绑定" btnStr:@"确定"];
+            alert.clickBlock = ^(int index) {
+                if (index == 0) {
+                    BindPhoneVC *vc = [BindPhoneVC new];
+                    vc.emailStr = emailStr;
+                    [self.navigationController pushViewController:vc animated:YES];
+                    
+                }
+//
+            };
+            [alert show];
+            return;
+        }
+        
+        ResetPassWordVC *vc = [ResetPassWordVC new];
+        vc.phoneStr = phoneStr;
+        [self.navigationController pushViewController:vc animated:YES];
+        
+        
+    }else if (indexPath.row == 1){
+        
+        if (emailStr.length == 0) {
+            MyTipAlert *alert = [[MyTipAlert alloc] initWithTipAlertWithTitle:@"个人信息提示" contentStr:@"您的邮箱尚未绑定" btnStr:@"确定"];
+            alert.clickBlock = ^(int index) {
+                if (index == 0) {
+                    
+                    BindEmailVC *vc = [BindEmailVC new];
+                    vc.phoneStr = phoneStr;
+                    [self.navigationController pushViewController:vc animated:YES];
+                }
+               
+            };
+            [alert show];
+            return;
+        }
+        BindPhoneVC *vc = [BindPhoneVC new];
+        vc.emailStr = emailStr;
+
+        [self.navigationController pushViewController:vc animated:YES];
+        
+    }else{
+        if (emailStr.length == 0) {
+            BindEmailVC *vc = [BindEmailVC new];
+            vc.phoneStr = phoneStr;
+            [self.navigationController pushViewController:vc animated:YES];
+        }
+       
+    }
+    
+    
+    
+}
+
+
+
+
+@end

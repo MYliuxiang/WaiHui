@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="FillNickNameVC">
+            <connections>
+                <outlet property="doneBtn" destination="3Mb-Ha-Isw" id="kbB-vX-LNx"/>
+                <outlet property="footerView" destination="kYD-KD-aRF" id="TE9-UD-1R6"/>
+                <outlet property="tableView" destination="aU1-51-41z" id="7nO-zL-hWj"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="aU1-51-41z">
+                    <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <connections>
+                        <outlet property="dataSource" destination="-1" id="4u1-Te-aXb"/>
+                        <outlet property="delegate" destination="-1" id="04r-P6-lh4"/>
+                    </connections>
+                </tableView>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="Q5M-cg-NOt" firstAttribute="bottom" secondItem="aU1-51-41z" secondAttribute="bottom" id="0jK-jE-xny"/>
+                <constraint firstItem="aU1-51-41z" firstAttribute="leading" secondItem="Q5M-cg-NOt" secondAttribute="leading" id="YZI-dH-nt8"/>
+                <constraint firstItem="aU1-51-41z" firstAttribute="top" secondItem="Q5M-cg-NOt" secondAttribute="top" id="bKS-Xa-f6r"/>
+                <constraint firstItem="Q5M-cg-NOt" firstAttribute="trailing" secondItem="aU1-51-41z" secondAttribute="trailing" id="fL2-VJ-lzP"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="Q5M-cg-NOt"/>
+        </view>
+        <view contentMode="scaleToFill" id="kYD-KD-aRF">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="355"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3Mb-Ha-Isw">
+                    <rect key="frame" x="15" y="110" width="345" height="44"/>
+                    <color key="backgroundColor" red="0.26274509800000001" green="0.36078431370000003" blue="0.58431372550000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="44" id="eaN-Lm-kDM"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="20"/>
+                    <state key="normal" title="确定">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </state>
+                    <connections>
+                        <action selector="doneAC:" destination="-1" eventType="touchUpInside" id="7CT-e1-eeP"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="3Mb-Ha-Isw" firstAttribute="leading" secondItem="SGf-dw-UJH" secondAttribute="leading" constant="15" id="LlR-GS-8Z3"/>
+                <constraint firstItem="SGf-dw-UJH" firstAttribute="trailing" secondItem="3Mb-Ha-Isw" secondAttribute="trailing" constant="15" id="rK7-NQ-bC2"/>
+                <constraint firstItem="3Mb-Ha-Isw" firstAttribute="top" secondItem="SGf-dw-UJH" secondAttribute="top" constant="110" id="xUp-Rs-0IA"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="SGf-dw-UJH"/>
+            <point key="canvasLocation" x="-783.20000000000005" y="139.880059970015"/>
+        </view>
+    </objects>
+</document>

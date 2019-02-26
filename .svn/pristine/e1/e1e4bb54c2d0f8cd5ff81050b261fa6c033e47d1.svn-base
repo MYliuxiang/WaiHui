@@ -1,0 +1,24 @@
+//
+//  AccountManagerVC.h
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/14.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "BaseViewController.h"
+#import "OpenSimulationCell.h"
+#import "OpenAccountCell.h"
+#import "SimulationCell.h"
+#import "AccountCell.h"
+#import "AccountMoreVC.h"
+#import "AddMt4VC.h"
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface AccountManagerVC : BaseViewController
+
+@property(nonatomic,strong)NSArray *dataList;
+@end
+
+NS_ASSUME_NONNULL_END

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="g5G-4I-BoL" customClass="MyTipAlert">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="242"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="快速交易" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zhq-nL-VAb">
+                    <rect key="frame" x="155" y="30" width="65.5" height="19.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <color key="textColor" red="0.23921568630000001" green="0.2784313725" blue="0.5450980392" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fP4-od-6aI">
+                    <rect key="frame" x="91" y="156.5" width="193" height="40"/>
+                    <color key="backgroundColor" red="0.26274509800000001" green="0.36078431370000003" blue="0.58431372550000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="5iv-Tw-znU"/>
+                    </constraints>
+                    <state key="normal" title="确定">
+                        <color key="titleColor" red="0.97254901959999995" green="0.97647058819999999" blue="0.99215686270000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="btn1AC:" destination="g5G-4I-BoL" eventType="touchUpInside" id="3Bf-Sf-NlW"/>
+                    </connections>
+                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="您的身份证信息认证失败，请您重新上传证件信息！" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TiS-Wp-XXb">
+                    <rect key="frame" x="91" y="89.5" width="193" height="40"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="193" id="dw1-DR-Kwh"/>
+                        <constraint firstAttribute="height" constant="40" id="gLE-kb-Itj"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <color key="textColor" red="0.65098039220000004" green="0.68235294120000001" blue="0.74901960779999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="Zhq-nL-VAb" firstAttribute="top" secondItem="3dj-QQ-R7n" secondAttribute="top" constant="30" id="Ert-v3-2lW"/>
+                <constraint firstItem="fP4-od-6aI" firstAttribute="leading" secondItem="TiS-Wp-XXb" secondAttribute="leading" id="JZO-fb-JAK"/>
+                <constraint firstItem="Zhq-nL-VAb" firstAttribute="centerX" secondItem="g5G-4I-BoL" secondAttribute="centerX" id="L6D-DD-fOh"/>
+                <constraint firstItem="TiS-Wp-XXb" firstAttribute="centerX" secondItem="g5G-4I-BoL" secondAttribute="centerX" id="QwG-zt-G1h"/>
+                <constraint firstItem="fP4-od-6aI" firstAttribute="trailing" secondItem="TiS-Wp-XXb" secondAttribute="trailing" id="SA7-8o-RNd"/>
+                <constraint firstItem="TiS-Wp-XXb" firstAttribute="top" secondItem="Zhq-nL-VAb" secondAttribute="bottom" constant="40" id="YW3-bo-zJq"/>
+                <constraint firstItem="fP4-od-6aI" firstAttribute="centerX" secondItem="g5G-4I-BoL" secondAttribute="centerX" id="bX8-Kj-zJz"/>
+                <constraint firstItem="fP4-od-6aI" firstAttribute="top" secondItem="TiS-Wp-XXb" secondAttribute="bottom" constant="27" id="x1X-2b-wgJ"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="3dj-QQ-R7n"/>
+            <connections>
+                <outlet property="contentLab" destination="TiS-Wp-XXb" id="nfa-pd-WKK"/>
+                <outlet property="doneBtn" destination="fP4-od-6aI" id="Xju-e1-vNP"/>
+                <outlet property="titleLab" destination="Zhq-nL-VAb" id="nEx-ku-iny"/>
+            </connections>
+            <point key="canvasLocation" x="53.600000000000001" y="123.23838080959521"/>
+        </view>
+    </objects>
+</document>

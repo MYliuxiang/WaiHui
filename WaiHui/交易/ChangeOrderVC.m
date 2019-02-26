@@ -1,0 +1,656 @@
+//
+//  ChangeOrderVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/13.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "ChangeOrderVC.h"
+
+@interface ChangeOrderVC ()
+
+@property (weak, nonatomic) IBOutlet UITableView *tableview;
+@property (strong, nonatomic) IBOutlet UIView *footerView;
+@property (weak, nonatomic) IBOutlet UIButton *doneBtn;
+@property (weak, nonatomic) IBOutlet UILabel *bondLab;
+@property (weak, nonatomic) IBOutlet UILabel *incomLab;
+
+@end
+
+@implementation ChangeOrderVC
+- (IBAction)doneAC:(id)sender {
+    
+    
+        
+        PriceCell *zeroCell = [self.tableview cellForRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0]];
+        
+        if ([zeroCell.countView.countTextField.text doubleValue] == 0) {
+            [SVProgressHUD showErrorWithStatus:@"请先设置挂单价格"];
+            return;
+        }
+        if (!zeroCell.countView.tipLab.hidden) {
+            [SVProgressHUD showErrorWithStatus:@"无效的挂单价格"];
+            return;
+        }
+        
+    
+        PriceCell *twoCell = [self.tableview cellForRowAtIndexPath:[NSIndexPath indexPathForRow:4 inSection:0]];
+        if (!twoCell.countView.tipLab.hidden) {
+            [SVProgressHUD showErrorWithStatus:@"无效的止损价格"];
+            return;
+        }
+        
+        PriceCell *threeCell = [self.tableview cellForRowAtIndexPath:[NSIndexPath indexPathForRow:5 inSection:0]];
+        if (!twoCell.countView.tipLab.hidden) {
+            [SVProgressHUD showErrorWithStatus:@"无效的止赢价格"];
+            return;
+        }
+        
+    NSString *commo;
+    NSString *vo = SNDiv(self.model.volume, @"100").stringValue;
+
+        BADataEntity *entity = [BADataEntity new];
+        entity.urlString = [NSString stringWithFormat:@"%@%@",MainUrl,Url_transactionAction];
+        entity.needCache = NO;
+        entity.parameters = @{@"types":@"1",@"Access_Token":[LxUserDefaults objectForKey:Token],@"mt4_id":[LxUserDefaults objectForKey:Mt4_id],@"symbol":self.model.symbol,@"type":@"OrderModify",@"command":self.model.command,@"volume":vo,@"order":self.model.order,@"operateForm":@"Ios",@"price":[NSString stringWithFormat:@"%@",zeroCell.countView.countTextField.text],@"sl":[NSString stringWithFormat:@"%@",twoCell.countView.countTextField.text],@"tp":[NSString stringWithFormat:@"%@",threeCell.countView.countTextField.text]};
+        [SVProgressHUD show];
+        [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeBlack];
+        
+        [BANetManager ba_request_POSTWithEntity:entity successBlock:^(id response) {
+            NSDictionary *result = response;
+            if ([result[@"code"] intValue] == 1) {
+                //成功
+                [SVProgressHUD dismiss];
+                [SVProgressHUD showSuccessWithStatus:@"改单成功"];
+                if (self.reloadBlock) {
+                    self.reloadBlock();
+                }
+                [self.navigationController popViewControllerAnimated:YES];
+                
+            }else{
+                
+                if([result[@"code"] intValue] == -1){
+                    //登录
+                    Mt4LoginAlert *alert = [[Mt4LoginAlert alloc] initTableViewAlertWithTitle:[NSString stringWithFormat:@"模拟账户：%@",[LxUserDefaults objectForKey:Mt4_id]]];
+                    alert.loginBlcok = ^(int type) {
+                        if (type == 1) {
+                            ResetPWStartVC *vc = [[ResetPWStartVC alloc] init];
+                            vc.mt4Str = [LxUserDefaults objectForKey:Mt4_id];
+                            [self.navigationController pushViewController:vc animated:YES];
+                        }else{
+                            [SVProgressHUD showSuccessWithStatus:@"登录成功请继续交易"];
+                        }
+                    };
+                    [alert show];
+                }
+                [SVProgressHUD showErrorWithStatus:result[@"message"]];
+                
+            }
+            
+            
+        } failureBlock:^(NSError *error) {
+            [SVProgressHUD showErrorWithStatus:error.userInfo[@"NSDebugDescription"]];
+            
+            
+        } progressBlock:^(int64_t bytesProgress, int64_t totalBytesProgress) {
+            
+        }];
+        
+        
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.title = @"改单";
+    [self wr_setNavBarShadowImageHidden:YES];
+    self.footerView.height = 130;
+    self.tableview.tableFooterView = self.footerView;
+    [self.doneBtn setTitle:[NSString stringWithFormat:@"#%@改单",self.model.order] forState:UIControlStateNormal];
+    [self.doneBtn hyb_addCornerRadius:5 size:CGSizeMake(kScreenWidth - 30, 44)];
+    
+    [self xw_addNotificationForName:ProductAlwaysNotice block:^(NSNotification * _Nonnull notification) {
+        
+        if(![LxUserDefaults boolForKey:IsLogin]){
+            return ;
+        }
+        SocketModel *model = notification.userInfo[@"model"];
+        
+        if ([model.symbol isEqualToString:self.model.symbol]) {
+            self.model.ask = [HandleTool changeFloatWithFloat:model.ask] ;
+            self.model.ask_state = [HandleTool changeFloatWithFloat:model.ask_state];
+            self.model.bid = [HandleTool changeFloatWithFloat:model.bid];
+            self.model.bid_state = [HandleTool changeFloatWithFloat:model.bid_state];
+            self.model.digits = [HandleTool changeFloatWithFloat:model.digits];
+            [self reloadUI];
+            [self countContract];
+        }
+        
+    }];
+    
+}
+
+- (void)reloadUI
+{
+    
+    
+    ChangeCell *cell = [self.tableview cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+    NSString *string = [NSString stringWithFormat:@"%%.%@f",self.model.digits];
+    cell.price1Lab.text = [NSString stringWithFormat:string,[self.model.ask doubleValue]];
+    cell.price2Lab.text = [NSString stringWithFormat:string,[self.model.bid doubleValue]];
+    
+    if ([self.model.command rangeOfString:@"Buy"].location != NSNotFound) {
+        //买单
+        if(self.model.ask_state == 2){
+            //涨
+            cell.price2View.backgroundColor = Color_Red;
+        }else if(self.model.ask_state == 2){
+            
+            cell.price2View.backgroundColor = Color_Green;
+        }else{
+            cell.price2View.backgroundColor = Color_Gray;
+
+        }
+        cell.price1View.backgroundColor = [MyColor colorWithHexString:@"#C3C7E1"];
+        
+        
+    }else{
+        
+        if(self.model.bid_state == 2){
+            //涨
+            cell.price1View.backgroundColor = Color_Red;
+        }else if(self.model.bid_state == 1){
+            
+            cell.price1View.backgroundColor = Color_Green;
+        }else{
+            cell.price1View.backgroundColor = Color_Gray;
+
+        }
+        cell.price2View.backgroundColor = [MyColor colorWithHexString:@"#C3C7E1"];
+    }
+    int a = SNSub(self.model.ask, self.model.bid).doubleValue * pow(10, [self.model.digits intValue]);
+    cell.centerLab.text = [NSString stringWithFormat:@"%d",a];
+    
+    
+    
+    //止损
+    PriceCell *slcell = [self.tableview cellForRowAtIndexPath:[NSIndexPath indexPathForRow:4 inSection:0]];
+    slcell.countView.countTextField.limitedSuffix = [self.model.digits intValue];
+    slcell.countView.digits = [self.model.digits intValue];
+    
+    if ([self.model.command rangeOfString:@"Buy"].location != NSNotFound) {
+        NSString *onestring = [NSString stringWithFormat:@"止损（≤%%.%@f）",self.model.digits];
+        
+        slcell.nameLab.text = [NSString stringWithFormat:onestring,[self.model.bid doubleValue] - pow(10, -[self.model.digits intValue]) * 50];
+        NSString *numStr = [NSString stringWithFormat:string,[self.model.bid doubleValue] - pow(10, -[self.model.digits intValue]) * 50];
+        
+        slcell.max = numStr;
+        
+        NSArray *array = [numStr componentsSeparatedByString:@"."];
+        NSString *lenStr = array[0];
+        slcell.countView.countTextField.limitedPrefix = lenStr.length;
+        
+    }else{
+        NSString *onestring = [NSString stringWithFormat:@"止损（≥%%.%@f）",self.model.digits];
+        
+        slcell.nameLab.text = [NSString stringWithFormat:onestring,[self.model.ask doubleValue] + pow(10, -[self.model.digits intValue]) * 50];
+        
+        NSString *numStr = [NSString stringWithFormat:string,[self.model.ask doubleValue] + pow(10, -[self.model.digits intValue]) * 50];
+        
+        slcell.min = numStr;
+        
+        NSArray *array = [numStr componentsSeparatedByString:@"."];
+        NSString *lenStr = array[0];
+        slcell.countView.countTextField.limitedPrefix = lenStr.length;
+        
+    }
+    
+    PriceCell *tcell = [self.tableview cellForRowAtIndexPath:[NSIndexPath indexPathForRow:5 inSection:0]];
+    
+    tcell.countView.countTextField.limitedPrefix = NSIntegerMax;
+    
+    tcell.countView.countTextField.limitedSuffix = [self.model.digits intValue];
+    tcell.countView.digits = [self.model.digits intValue];
+    
+    tcell.countView.tipLab.text = @"无效的止盈价格";
+    
+    if ([self.model.command rangeOfString:@"Buy"].location != NSNotFound) {
+        NSString *Twostring = [NSString stringWithFormat:@"止盈（≥%%.%@f）",self.model.digits];
+        
+        tcell.nameLab.text = [NSString stringWithFormat:Twostring,[self.model.bid doubleValue] + pow(10, -[self.model.digits intValue]) * 50];
+        NSString *numStr = [NSString stringWithFormat:string,[self.model.bid doubleValue] + pow(10, -[self.model.digits intValue]) * 50];
+        
+        tcell.min = numStr;
+        
+    }else{
+        NSString *Twostring = [NSString stringWithFormat:@"止盈（≤%%.%@f）",self.model.digits];
+        
+        tcell.nameLab.text = [NSString stringWithFormat:Twostring,[self.model.ask doubleValue] - pow(10, -[self.model.digits intValue]) * 50];
+        
+        NSString *numStr = [NSString stringWithFormat:string,[self.model.ask doubleValue] - pow(10, -[self.model.digits intValue]) * 50];
+        tcell.max = numStr;
+        
+    }
+    PriceCell *onecell = [self.tableview cellForRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0]];
+    
+    
+    NSString *str = [NSString stringWithFormat:@"%%.%@f",self.model.digits];
+    onecell.countView.countTextField.limitedSuffix = [self.model.digits intValue];
+    
+    onecell.countView.tipLab.text = @"无效的挂单价格";
+    
+    if ([self.model.command rangeOfString:@"Limit"].location != NSNotFound) {
+        if ([self.model.command rangeOfString:@"Buy"].location != NSNotFound) {
+            //买入
+            onecell.countView.plusButton.enabled = NO;
+            onecell.countView.minusButton.enabled = YES;
+            NSString *string = [NSString stringWithFormat:@"价格（≤%%.%@f）",self.model.digits];
+            
+            onecell.nameLab.text = [NSString stringWithFormat:string,[self.model.bid doubleValue] - pow(10, -[self.model.digits intValue]) * 50];
+            NSString *numStr = [NSString stringWithFormat:str,[self.model.bid doubleValue] - pow(10, -[self.model.digits intValue]) * 50];
+            
+            onecell.max = numStr;
+            
+        }else{
+            //卖出
+            onecell.countView.plusButton.enabled = YES;
+            onecell.countView.minusButton.enabled = NO;
+            NSString *string = [NSString stringWithFormat:@"价格（≥%%.%@f）",self.model.digits];
+            
+            onecell.nameLab.text = [NSString stringWithFormat:string,[self.model.ask doubleValue] + pow(10, -[self.model.digits intValue]) * 50];
+            NSString *numStr = [NSString stringWithFormat:str,[self.model.ask doubleValue] + pow(10, -[self.model.digits intValue]) * 50];
+            onecell.min = numStr;
+            
+        }
+    }else{
+        if ([self.model.command rangeOfString:@"Buy"].location != NSNotFound) {
+            //买入
+            onecell.countView.plusButton.enabled = YES;
+            onecell.countView.minusButton.enabled = NO;
+            NSString *string = [NSString stringWithFormat:@"价格（≥%%.%@f）",self.model.digits];
+            
+            onecell.nameLab.text = [NSString stringWithFormat:string,[self.model.ask doubleValue] + pow(10, -[self.model.digits intValue]) * 50];
+            NSString *numStr = [NSString stringWithFormat:str,[self.model.ask doubleValue] + pow(10, -[self.model.digits intValue]) * 50];
+            onecell.min = numStr;
+            
+        }else{
+            //卖出
+            
+            onecell.countView.plusButton.enabled = NO;
+            onecell.countView.minusButton.enabled = YES;
+            NSString *string = [NSString stringWithFormat:@"价格（≤%%.%@f）",self.model.digits];
+            
+            onecell.nameLab.text = [NSString stringWithFormat:string,[self.model.bid doubleValue] - pow(10, -[self.model.digits intValue]) * 50];
+            NSString *numStr = [NSString stringWithFormat:str,[self.model.bid doubleValue] - pow(10, -[self.model.digits intValue]) * 50];
+            
+            onecell.max = numStr;
+            
+        }
+    }
+    
+    
+}
+
+- (void)countContract
+{
+    NSString *bondStr;
+    
+    ValueOneCell *one = [self.tableview cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+    
+    NSString *market_price;
+    if ([self.model.command rangeOfString:@"Buy"].location != NSNotFound) {
+        market_price =[NSString stringWithFormat:@"%@",self.model.bid];
+    }else{
+        market_price = [NSString stringWithFormat:@"%@",self.model.ask];
+    }
+    if ([one.priceLab.text doubleValue] == 0) {
+        bondStr = @"0.00";
+    }else{
+        
+        if ([self.model.margin_mode isEqualToString:@"0"]) {
+            
+            NSDecimalNumber *n1 =  SNMul(one.priceLab.text, self.model.contract_size);
+            NSDecimalNumber *n2 =  SNMul(n1, self.model.leverage);
+            NSDecimalNumber *n3 =  SNMul(n2, self.model.margin_divider);
+            NSDecimalNumber *n4 =  SNDiv(n3, @"100");
+            bondStr = n4.stringValue;
+            
+        }else if ([self.model.margin_mode isEqualToString:@"1"]){
+            NSDecimalNumber *n1 =  SNMul(one.priceLab.text, self.model.contract_size);
+            NSDecimalNumber *n2 =  SNMul(n1, market_price);
+            NSDecimalNumber *n3 =  SNMul(n2, self.model.margin_divider);
+            NSDecimalNumber *n4 =  SNDiv(n3, @"100");
+            bondStr = n4.stringValue;
+            
+            
+        }else if ([self.model.margin_mode isEqualToString:@"2"]){
+            NSDecimalNumber *n1 =  SNMul(one.priceLab.text, self.model.contract_size);
+            NSDecimalNumber *n2 =  SNMul(n1, self.model.margin_initial);
+            NSDecimalNumber *n3 =  SNMul(n2, self.model.margin_divider);
+            NSDecimalNumber *n4 =  SNDiv(n3, @"100");
+            bondStr = n4.stringValue;
+            
+        }else if ([self.model.margin_mode isEqualToString:@"3"]){
+            
+            NSDecimalNumber *n1 =  SNMul(one.priceLab.text, self.model.contract_size);
+            NSDecimalNumber *n2 =  SNMul(n1, market_price);
+            NSDecimalNumber *n3 =  SNMul(n2, self.model.margin_divider);
+            NSDecimalNumber *n4 =  SNDiv(n3, @"100");
+            NSDecimalNumber *n5 =  SNDiv(n4, self.model.tick_size);
+            NSDecimalNumber *n6 =  SNDiv(n5, self.model.tick_value);
+            bondStr = n6.stringValue;
+            
+        }else{
+            NSDecimalNumber *n1 =  SNMul(one.priceLab.text, self.model.contract_size);
+            NSDecimalNumber *n2 =  SNMul(n1, market_price);
+            NSDecimalNumber *n3 =  SNMul(n2, self.model.margin_divider);
+            NSDecimalNumber *n4 =  SNDiv(n3, @"100");
+            NSDecimalNumber *n5 =  SNDiv(n4, self.model.leverage);
+            bondStr = n5.stringValue;
+        }
+    }
+    
+     self.bondLab.text = [NSString stringWithFormat:@"参考保证金：%@美元   ",bondStr];
+    
+}
+
+
+
+
+#pragma  mark --------UITableView Delegete----------
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 6;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == 0) {
+        static NSString *identifire = @"ChangeCellID";
+        ChangeCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+        if (cell == nil) {
+            cell = [[[NSBundle mainBundle] loadNibNamed:@"ChangeCell" owner:nil options:nil] firstObject];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+        }
+        
+        NSString *string = [NSString stringWithFormat:@"%%.%@f",self.model.digits];
+        cell.price1Lab.text = [NSString stringWithFormat:string,[self.model.ask doubleValue]];
+        cell.price2Lab.text = [NSString stringWithFormat:string,[self.model.bid doubleValue]];
+        
+        if ([self.model.command rangeOfString:@"Buy"].location != NSNotFound) {
+            //买单
+            if(self.model.ask_state == 2){
+                //涨
+                cell.price2View.backgroundColor = Color_Red;
+                
+            }else if(self.model.ask_state == 1){
+                
+                cell.price2View.backgroundColor = Color_Green;
+                
+            }else{
+                cell.price2View.backgroundColor = Color_Gray;
+
+            }
+            cell.price1View.backgroundColor = [MyColor colorWithHexString:@"#C3C7E1"];
+
+            
+        }else{
+            
+            if(self.model.bid_state == 2){
+                //涨
+                cell.price1View.backgroundColor = Color_Red;
+            }else if(self.model.bid_state == 1){
+                
+                 cell.price1View.backgroundColor = Color_Green;
+                
+            }else{
+                 cell.price1View.backgroundColor = Color_Gray;
+                
+            }
+               cell.price2View.backgroundColor = [MyColor colorWithHexString:@"#C3C7E1"];
+        }
+        int a = SNSub(self.model.ask, self.model.bid).doubleValue * pow(10, [self.model.digits intValue]);
+        cell.centerLab.text = [NSString stringWithFormat:@"%d",a];
+        
+        
+        
+        return cell;
+    }else if(indexPath.row == 3 || indexPath.row == 1){
+        
+        static NSString *identifire = @"PriceOneCellID";
+        ValueOneCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+        if (cell == nil) {
+            cell = [[[NSBundle mainBundle] loadNibNamed:@"ValueOneCell" owner:nil options:nil] firstObject];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+        }
+        if (indexPath.row == 3) {
+            cell.nameLab.text = @"交易手数";
+            NSString *vo = SNDiv(self.model.volume, @"100").stringValue;
+            cell.priceLab.text = vo;
+        }else{
+            cell.nameLab.text = @"交易手数";
+            if ([self.model.command rangeOfString:@"Limit"].location != NSNotFound) {
+                cell.priceLab.text = @"限价";
+            }else{
+                cell.priceLab.text = @"停损";
+
+            }
+            
+        }
+       
+        return cell;
+       
+    }else{
+        
+        
+        static NSString *identifire = @"PriceCellID";
+        PriceCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+        if (cell == nil) {
+            cell = [[[NSBundle mainBundle] loadNibNamed:@"PriceCell" owner:nil options:nil] lastObject];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+        }
+        
+        cell.step = [HandleTool changeFloatWithFloat:pow(10, -[self.model.digits intValue]) * 10];
+        cell.countView.digits = [self.model.digits intValue];
+        
+        
+        if (indexPath.row == 4) {
+            //止损
+            NSString *str = [NSString stringWithFormat:@"%%.%@f",self.model.digits];
+            cell.countView.countTextField.limitedSuffix = [self.model.digits intValue];
+            cell.countView.tipLab.text = @"无效的止损价格";
+            
+            if ([self.model.command rangeOfString:@"Buy"].location != NSNotFound){
+                
+                cell.countView.plusButton.enabled = NO;
+                cell.countView.minusButton.enabled = YES;
+                
+                NSString *string = [NSString stringWithFormat:@"止损（≤%%.%@f）",self.model.digits];
+                cell.nameLab.text = [NSString stringWithFormat:string,[self.model.bid doubleValue] - pow(10, - [self.model.digits intValue]) * 50];
+                NSString *numStr = [NSString stringWithFormat:str,[self.model.bid doubleValue] - pow(10, -[self.model.digits intValue]) * 50];
+                
+                cell.max = numStr;
+                NSArray *array = [numStr componentsSeparatedByString:@"."];
+                NSString *lenStr = array[0];
+                cell.countView.countTextField.limitedPrefix = lenStr.length;
+                
+                
+            }else{
+                cell.countView.plusButton.enabled = YES;
+                cell.countView.minusButton.enabled = NO;
+                
+                NSString *string = [NSString stringWithFormat:@"止损（≥%%.%@f）",self.model.digits];
+                
+                cell.nameLab.text = [NSString stringWithFormat:string,[self.model.ask doubleValue] + pow(10, -[self.model.digits intValue]) * 50];
+                
+                NSString *numStr = [NSString stringWithFormat:str,[self.model.ask doubleValue] + pow(10, -[self.model.digits intValue]) * 50];
+                
+                cell.min = numStr;
+                NSArray *array = [numStr componentsSeparatedByString:@"."];
+                NSString *lenStr = array[0];
+                cell.countView.countTextField.limitedPrefix = lenStr.length;
+                
+            }
+        }else if(indexPath.row == 5){
+            
+            NSString *str = [NSString stringWithFormat:@"%%.%@f",self.model.digits];
+            cell.countView.countTextField.limitedPrefix = NSIntegerMax;
+            cell.countView.countTextField.limitedSuffix = [self.model.digits intValue];
+            cell.countView.tipLab.text = @"无效的止盈价格";
+            
+            if ([self.model.command rangeOfString:@"Buy"].location != NSNotFound) {
+                
+                cell.countView.plusButton.enabled = YES;
+                cell.countView.minusButton.enabled = NO;
+                NSString *string = [NSString stringWithFormat:@"止盈（≥%%.%@f）",self.model.digits];
+                
+                cell.nameLab.text = [NSString stringWithFormat:string,[self.model.bid doubleValue] + pow(10, -[self.model.digits intValue]) * 50];
+                NSString *numStr = [NSString stringWithFormat:str,[self.model.bid doubleValue] + pow(10, -[self.model.digits intValue]) * 50];
+                
+                cell.min = numStr;
+                
+            }else{
+                
+                cell.countView.plusButton.enabled = NO;
+                cell.countView.minusButton.enabled = YES;
+                NSString *string = [NSString stringWithFormat:@"止盈（≤%%.%@f）",self.model.digits];
+                
+                cell.nameLab.text = [NSString stringWithFormat:string,[self.model.ask doubleValue] - pow(10, -[self.model.digits intValue]) * 50];
+                NSString *numStr = [NSString stringWithFormat:str,[self.model.ask doubleValue] - pow(10, -[self.model.digits intValue]) * 50];
+                cell.max = numStr;
+            }
+            
+        }else{
+            
+            
+            NSString *str = [NSString stringWithFormat:@"%%.%@f",self.model.digits];
+            cell.countView.countTextField.limitedSuffix = [self.model.digits intValue];
+            
+            cell.countView.tipLab.text = @"无效的挂单价格";
+            
+            if ([self.model.command rangeOfString:@"Limit"].location != NSNotFound) {
+                if ([self.model.command rangeOfString:@"Buy"].location != NSNotFound) {
+                    //买入
+                    cell.countView.plusButton.enabled = NO;
+                    cell.countView.minusButton.enabled = YES;
+                    NSString *string = [NSString stringWithFormat:@"价格（≤%%.%@f）",self.model.digits];
+                    
+                    cell.nameLab.text = [NSString stringWithFormat:string,[self.model.bid doubleValue] - pow(10, -[self.model.digits intValue]) * 50];
+                    NSString *numStr = [NSString stringWithFormat:str,[self.model.bid doubleValue] - pow(10, -[self.model.digits intValue]) * 50];
+                    
+                    cell.max = numStr;
+                    cell.countView.currentCount = numStr;
+                    
+                }else{
+                    //卖出
+                    cell.countView.plusButton.enabled = YES;
+                    cell.countView.minusButton.enabled = NO;
+                    NSString *string = [NSString stringWithFormat:@"价格（≥%%.%@f）",self.model.digits];
+                    
+                    cell.nameLab.text = [NSString stringWithFormat:string,[self.model.ask doubleValue] + pow(10, -[self.model.digits intValue]) * 50];
+                    NSString *numStr = [NSString stringWithFormat:str,[self.model.ask doubleValue] + pow(10, -[self.model.digits intValue]) * 50];
+                    cell.min = numStr;
+                    cell.countView.currentCount = numStr;
+                    
+                }
+            }else{
+                if ([self.model.command rangeOfString:@"Buy"].location != NSNotFound) {
+                    //买入
+                    cell.countView.plusButton.enabled = YES;
+                    cell.countView.minusButton.enabled = NO;
+                    NSString *string = [NSString stringWithFormat:@"价格（≥%%.%@f）",self.model.digits];
+                    
+                    cell.nameLab.text = [NSString stringWithFormat:string,[self.model.ask doubleValue] + pow(10, -[self.model.digits intValue]) * 50];
+                    NSString *numStr = [NSString stringWithFormat:str,[self.model.ask doubleValue] + pow(10, -[self.model.digits intValue]) * 50];
+                    cell.min = numStr;
+                    cell.countView.currentCount = numStr;
+                    
+                }else{
+                    //卖出
+                    
+                    cell.countView.plusButton.enabled = NO;
+                    cell.countView.minusButton.enabled = YES;
+                    NSString *string = [NSString stringWithFormat:@"价格（≤%%.%@f）",self.model.digits];
+                    
+                    cell.nameLab.text = [NSString stringWithFormat:string,[self.model.bid doubleValue] - pow(10, -[self.model.digits intValue]) * 50];
+                    NSString *numStr = [NSString stringWithFormat:str,[self.model.bid doubleValue] - pow(10, -[self.model.digits intValue]) * 50];
+                    
+                    cell.max = numStr;
+                    cell.countView.currentCount = numStr;
+                    
+                }
+                    
+                }
+            }
+        
+        return cell;
+    }
+    
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == 0) {
+        return 96;
+    }else if (indexPath.row == 2 || indexPath.row == 4 || indexPath.row == 5){
+        
+        return 75;
+    }
+    return 48;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    
+    return 32;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.1;
+    
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 32)];
+    view.backgroundColor = [MyColor colorWithHexString:@"#FAFBFE"];
+    
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(15, 0,30, 32)];
+    label.text = self.model.symbolName;
+    label.font = [UIFont systemFontOfSize:12];
+    label.textColor = [MyColor colorWithHexString:@"#2B2B76"];
+    [view addSubview:label];
+    [label sizeToFit];
+    label.centerY = view.centerY;
+    
+    UILabel *label1 = [[UILabel alloc] initWithFrame:CGRectMake(label.right + 5, 0,30, 32)];
+    label1.text = self.model.symbol;
+    label1.font = [UIFont systemFontOfSize:10];
+    label1.textColor = [MyColor colorWithHexString:@"#9EA3C6"];
+    [view addSubview:label1];
+    [label1 sizeToFit];
+    label1.centerY = view.centerY;
+    return view;
+    
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    
+    
+}
+@end

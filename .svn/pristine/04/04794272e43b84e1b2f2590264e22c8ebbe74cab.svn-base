@@ -1,0 +1,126 @@
+//
+//  ListVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/11.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "ListVC.h"
+
+@interface ListVC ()<JXPagerViewListViewDelegate>
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property(nonatomic,retain) NSMutableArray *dataList;
+@property (nonatomic, copy) void(^scrollCallback)(UIScrollView *scrollView);
+
+@end
+
+@implementation ListVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.dataList = [NSMutableArray array];
+    for (int i = 0; i < 10; i++) {
+        ListModel *model = [[ListModel alloc] init];
+        [self.dataList addObject:model];
+    }
+}
+
+#pragma  mark --------UITableView Delegete----------
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.dataList.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    static NSString *identifire = @"cellID";
+    ListCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+    if (cell == nil) {
+        cell = [[[NSBundle mainBundle] loadNibNamed:@"ListCell" owner:nil options:nil] lastObject];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    }
+    
+    cell.model = self.dataList[indexPath.row];
+    cell.hqBlock = ^(ListModel * _Nonnull model) {
+        //行情
+    };
+    cell.gdBlock = ^(ListModel * _Nonnull model) {
+        //改单
+        ChangeOrderVC *vc = [ChangeOrderVC new];
+        [self.navigationController pushViewController:vc animated:YES];
+    };
+    cell.csBlock = ^(ListModel * _Nonnull model) {
+        //撤单
+    };
+    return cell;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    HoldModel *model = self.dataList[indexPath.row];
+    return [self.tableView cellHeightForIndexPath:indexPath model:model keyPath:@"model" cellClass:[ListCell class] contentViewWidth:kScreenWidth];;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    
+    return 0.1;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.1;
+    
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    HoldModel *model = self.dataList[indexPath.row];
+    model.isOpen = !model.isOpen;
+    [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+    
+    
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    !self.scrollCallback ?: self.scrollCallback(scrollView);
+}
+
+#pragma mark - JXPagingViewListViewDelegate
+- (UIView *)listView {
+    return self.view;
+}
+
+
+- (UIScrollView *)listScrollView {
+    return self.tableView;
+}
+
+
+- (void)listViewDidScrollCallback:(void (^)(UIScrollView *))callback {
+    self.scrollCallback = callback;
+}
+
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

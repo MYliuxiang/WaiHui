@@ -1,0 +1,105 @@
+//
+//  QuoTationListCell.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/6.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "QuoTationListCell.h"
+
+@implementation QuoTationListCell
+
+- (void)awakeFromNib {
+    [super awakeFromNib];
+    // Initialization code
+    self.price1Lab.layer.cornerRadius = 5;
+    self.price1Lab.layer.masksToBounds = YES;
+    
+    self.price2Lab.layer.cornerRadius = 5;
+    self.price2Lab.layer.masksToBounds = YES;
+    
+    [self xw_addNotificationForName:SocketDataChanger block:^(NSNotification * _Nonnull notification) {
+        
+        ProductModel *model = notification.userInfo[@"model"];
+        if ([self.model.symbol isEqualToString:model.symbol]) {
+            self.nameLab.text = model.symbolName;
+            self.subNameLab.text = model.symbolName;
+            
+             NSString *string = [NSString stringWithFormat:@"%%.%ldf",model.digits];
+            self.price1Lab.text = [NSString stringWithFormat:string,model.ask];
+            self.price2Lab.text = [NSString stringWithFormat:string,model.bid];
+
+            if(model.ask_state == 2){
+                //涨
+                self.price1Lab.backgroundColor = Color_Red;
+                
+            }else if(model.ask_state == 1) {
+                self.price1Lab.backgroundColor = Color_Green;
+                
+            }else{
+                self.price1Lab.backgroundColor = Color_Gray;
+
+            }
+            if(model.bid_state == 2){
+                self.price2Lab.backgroundColor = Color_Red;
+
+            }else if(model.bid_state == 1){
+                self.price2Lab.backgroundColor = Color_Green;
+                
+            }else{
+                self.price2Lab.backgroundColor = Color_Gray;
+
+            }
+            
+        }
+    }];
+    
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+  
+    
+}
+
+- (void)setModel:(ProductModel *)model
+{
+    _model = model;
+    self.nameLab.text = model.symbolName;
+    self.subNameLab.text = model.symbolName;
+    NSString *string = [NSString stringWithFormat:@"%%.%ldf",model.digits];
+    self.price1Lab.text = [NSString stringWithFormat:string,model.ask];
+    self.price2Lab.text = [NSString stringWithFormat:string,model.bid];
+    if(model.ask_state == 2){
+        //涨
+        self.price1Lab.backgroundColor = Color_Red;
+    }else if(model.ask_state == 1){
+        self.price1Lab.backgroundColor = Color_Green;
+
+    }else{
+        self.price1Lab.backgroundColor = Color_Gray;
+
+    }
+    if(model.bid_state == 2){
+        self.price2Lab.backgroundColor = Color_Red;
+
+    }else if(model.bid_state == 1){
+        self.price2Lab.backgroundColor = Color_Green;
+
+    }else{
+        self.price2Lab.backgroundColor = Color_Gray;
+
+        
+    }
+
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+
+    // Configure the view for the selected state
+}
+
+@end

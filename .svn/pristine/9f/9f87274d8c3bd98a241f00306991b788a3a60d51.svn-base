@@ -1,0 +1,89 @@
+//
+//  OptionalVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/6.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "OptionalVC.h"
+
+@interface OptionalVC ()
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (strong, nonatomic) IBOutlet UIView *headerView;
+
+@end
+
+@implementation OptionalVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.title = @"自选";
+    [self wr_setNavBarShadowImageHidden:YES];
+//    [self wr_setNavBarBarTintColor:[MyColor colorWithHexString:@"#435B9B"]];
+
+}
+
+#pragma  mark --------UITableView Delegete----------
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 10;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    static NSString *identifire = @"cellID";
+    QuoTationListCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+    if (cell == nil) {
+        cell = [[[NSBundle mainBundle] loadNibNamed:@"QuoTationListCell" owner:nil options:nil] lastObject];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
+    }
+    
+    return cell;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 60;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    
+    return 24;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.1;
+    
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    DetailQuotationVC *vc = [[DetailQuotationVC alloc] init];
+    [self.navigationController pushViewController:vc animated:YES];
+    
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    return self.headerView;
+}
+
+
+
+
+@end

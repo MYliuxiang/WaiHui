@@ -1,0 +1,67 @@
+//
+//  AccountCell.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/14.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "AccountCell.h"
+
+@implementation AccountCell
+
+- (void)awakeFromNib {
+    [super awakeFromNib];
+    // Initialization code
+
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+
+    // Configure the view for the selected state
+}
+
+- (IBAction)moreAC:(id)sender {
+    
+    if (self.moreBlock) {
+        self.moreBlock();
+    }
+}
+
+- (void)layoutSubviews
+{
+    
+    [super layoutSubviews];
+    [self.bgView hyb_addCornerRadius:5 size:CGSizeMake(kScreenWidth - 30, 138)];
+    
+}
+
+- (void)setModel:(Mt4Model *)model
+{
+    _model = model;
+    self.nameLab.text = model.mt4_id;
+    self.lab2.text = model.balance;
+    self.lab3.text = model.standard_volume;
+    self.lab4.text = model.withdrawal;
+    self.lab5.text = model.recharge;
+    self.labe1.text = [NSString stringWithFormat:@"%.2f",model.income];
+
+    if (_model.is_default == 0) {
+        self.statusImg.hidden = YES;
+        self.qieHuanBtn.hidden = NO;
+
+    }else{
+        self.statusImg.hidden = NO;
+        self.qieHuanBtn.hidden = YES;
+    }
+    
+}
+
+- (IBAction)qieHuanAC:(id)sender {
+    
+    if (self.switchBlock) {
+        self.switchBlock();
+    }
+}
+@end

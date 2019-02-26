@@ -1,0 +1,636 @@
+//
+//  DetailQuotationVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/7.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "DetailQuotationVC.h"
+#import "ATChooseCountView.h"
+
+@interface DetailQuotationVC ()<WKNavigationDelegate,WKUIDelegate,WKScriptMessageHandler>
+@property (strong, nonatomic) IBOutlet UIView *mytitle;
+@property (weak, nonatomic) IBOutlet UILabel *titleLab;
+@property (weak, nonatomic) IBOutlet UILabel *titleSubLab;
+@property (strong, nonatomic) IBOutlet UIView *botomView;
+@property (weak, nonatomic) IBOutlet UIButton *guaDanbtn;
+@property (weak, nonatomic) IBOutlet UIButton *sellBtn;
+@property (weak, nonatomic) IBOutlet UIButton *buyBtn;
+
+@property (strong,nonatomic) LxChooseCountView *countView;
+@property (nonatomic,strong) ProductModel *model;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityView;
+@property (strong, nonatomic) WKWebView *webView;
+@property (strong, nonatomic) WKUserContentController *userContentController;
+
+
+@end
+
+@implementation DetailQuotationVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    
+    
+    
+    [self loadData];
+    self.botomView.hidden = YES;
+    self.activityView.hidden = YES;
+    self.buyBtn.layer.masksToBounds = YES;
+    self.buyBtn.layer.cornerRadius = 5;
+    
+    self.sellBtn.layer.masksToBounds = YES;
+    self.sellBtn.layer.cornerRadius = 5;
+    
+    [self.guaDanbtn hyb_addCornerRadius:5 size:CGSizeMake(50, 40)];
+    
+    
+   
+
+
+    
+  
+}
+
+- (void)hanleFooterView
+{
+    
+    NSString *string = [NSString stringWithFormat:@"%%.%ldf",self.model.digits];
+    
+    [self.buyBtn setTitle:[NSString stringWithFormat:string,self.model.bid] forState:UIControlStateNormal];
+    [self.sellBtn setTitle:[NSString stringWithFormat:string,self.model.ask] forState:UIControlStateNormal];
+    [self.buyBtn layoutButtonWithEdgeInsetsStyle:MKButtonEdgeInsetsStyleLeft imageTitleSpace:0];
+    [self.sellBtn layoutButtonWithEdgeInsetsStyle:MKButtonEdgeInsetsStyleRight imageTitleSpace:0];
+    
+    if(self.model.bid_state == 2){
+        //涨
+        self.buyBtn.backgroundColor = Color_Red;
+    }else if(self.model.bid_state == 1){
+        
+        self.buyBtn.backgroundColor = Color_Green;
+    }else{
+        
+        self.buyBtn.backgroundColor = Color_Gray;
+
+    }
+    
+    if(self.model.ask_state == 2){
+        //涨
+        self.sellBtn.backgroundColor = Color_Red;
+        
+    }else if(self.model.ask_state == 1){
+        
+        self.sellBtn.backgroundColor = Color_Green;
+        
+    }else{
+        
+        self.sellBtn.backgroundColor = Color_Gray;
+    }
+}
+
+- (void)hanldUI
+{
+    self.navigationItem.titleView = self.mytitle;
+    self.titleLab.text = self.model.symbolName;
+    self.titleSubLab.text = self.model.symbol;
+    [self creatNav];
+    
+    _countView = [[LxChooseCountView alloc] init];
+    _countView.frame = CGRectMake(10, 10, 130, 40);
+    _countView.lot_step = self.model.lot_step;
+    _countView.minCount = self.model.lot_min;
+    _countView.maxCount = self.model.lot_max;
+    
+    NSString *minStr = self.model.lot_min;
+    if ([minStr rangeOfString:@"."].location == NSNotFound) {
+        _countView.countTextField.limitedSuffix = 0;
+        _countView.digits = 0;
+
+    }else{
+        
+        _countView.countTextField.limitedSuffix = minStr.length - [minStr rangeOfString:@"."].location - 1;
+        _countView.digits = minStr.length - [minStr rangeOfString:@"."].location - 1;
+
+    }
+    
+//    _countView.countTextField.limitedSuffix = [self.model.lot_min]
+    
+    
+    int a = (int)self.model.lot_max;
+    _countView.countTextField.limitedPrefix = [NSString stringWithFormat:@"%d",a].length;
+//    _countView.countTextField.limitedPrefix = NSIntegerMax;
+
+    _countView.currentCount = self.model.lot_min;
+    _countView.plusNomalImageStr = @"add_selected02";
+    _countView.plusDisabledImageStr = @"Add_unselected";
+    _countView.minusNomalImageStr = @"off_unselected01";
+    _countView.minusDisabledImageStr = @"off_unselected";
+
+    [self.botomView addSubview:_countView];
+    self.botomView.hidden = NO;
+    
+    self.activityView.hidden = NO;
+    [self.activityView startAnimating];
+    
+    self.userContentController = [[WKUserContentController alloc] init];
+    //注册方法
+    WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+    configuration.userContentController = self.userContentController;
+    
+    //调用JS方法
+    [configuration.userContentController addScriptMessageHandler:self name:@"GoIos"];
+    
+    
+    _webView = [[WKWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 40) configuration:configuration];
+    _webView.backgroundColor = [UIColor whiteColor];
+    _webView.navigationDelegate = self;
+    _webView.scrollView.bounces = NO;
+    [self.view addSubview:_webView];
+    
+    [_webView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.view);
+        make.left.equalTo(self.view);
+        make.right.equalTo(self.view);
+        make.bottom.equalTo(self.botomView.mas_top);
+        
+        
+    }];
+    
+    
+//    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",@"http://192.168.0.25/Candlestick/ws.html?symbol=BTC",self.sybol]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@symbol=%@",Web_url,self.sybol]];
+    NSURLRequest *resquest = [NSURLRequest requestWithURL:url];
+    [_webView loadRequest:resquest];
+   
+    
+}
+
+//注销协议
+- (void)dealloc
+{
+    [self.userContentController removeScriptMessageHandlerForName:@"GoIos"];
+    _webView.navigationDelegate = nil;
+
+}
+//实施协议
+- (void)userContentController:(WKUserContentController *)userContentController
+      didReceiveScriptMessage:(WKScriptMessage *)message {
+    NSLog(@"%@", message.body);
+   
+}
+
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
+{
+    decisionHandler(WKNavigationActionPolicyAllow);
+    //允许webView的点击时数据的获取
+    NSString *str = [navigationAction.request.URL.relativeString stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    if (str.length != 0 && [str hasPrefix:@"myapp:"] && [str rangeOfString:@"myapp:undefined"].location == NSNotFound) {
+        NSString *jsonStr = [str substringFromIndex:6];
+        NSDictionary *dic = [HandleTool dictionaryWithJsonString:jsonStr];
+        self.model.ask = [dic[@"ask"] floatValue];
+        self.model.bid = [dic[@"bid"] floatValue];
+        self.model.bid_state = [dic[@"bid_state"] intValue];
+        self.model.digits = [dic[@"digits"] intValue];
+        self.model.price = dic[@"price"];
+        self.model.timestamp = dic[@"timestamp"];
+        self.model.type = dic[@"type"];
+        
+        [self hanleFooterView];
+        
+    }
+    
+    
+}
+
+- (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler
+{
+//    NSDictionary *dic = [NSDictionary parseJSONStringToNSDictionary:message];
+    completionHandler();
+}
+
+- (void)webView:(WKWebView *)webView runJavaScriptConfirmPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL))completionHandler
+{
+    completionHandler(NO);
+}
+
+
+
+- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation
+{
+    [_activityView startAnimating];
+    //开启状态上的加载提示
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+    
+}
+
+- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(null_unspecified WKNavigation *)navigation withError:(NSError *)error {
+    //加载失败
+    [_activityView stopAnimating];
+    //开启状态上的加载提示
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+    
+}
+
+
+
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
+    //加载完成
+    [_activityView stopAnimating];
+    //开启状态上的加载提示
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+}
+
+- (void)loadData
+{
+    BADataEntity *entity = [BADataEntity new];
+    entity.urlString = [NSString stringWithFormat:@"%@%@",MainUrl,Url_marketCentre];
+    entity.needCache = NO;
+    entity.parameters = @{@"types":@"4",@"mt4_id":[LxUserDefaults objectForKey:Mt4_id],@"symbol":self.sybol};
+    [SVProgressHUD show];
+    [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeNone];
+    
+    [BANetManager ba_request_POSTWithEntity:entity successBlock:^(id response) {
+        NSDictionary *result = response;
+        if ([result[@"code"] intValue] == 1) {
+            //成功
+            [SVProgressHUD dismiss];
+            self.model = [ProductModel mj_objectWithKeyValues:result[@"data"]];
+            [self hanldUI];
+            [self hanleFooterView];
+            
+        }else{
+            
+            [SVProgressHUD showErrorWithStatus:result[@"message"]];
+            
+        }
+        
+    } failureBlock:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:error.userInfo[@"NSDebugDescription"]];
+        
+        
+    } progressBlock:^(int64_t bytesProgress, int64_t totalBytesProgress) {
+        
+    }];
+    
+}
+
+
+
+- (void)creatNav
+{
+    UIView *barView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 60, 40)];
+    
+    UIButton *btn1 = [UIButton buttonWithType:UIButtonTypeCustom];
+    btn1.frame = CGRectMake(0, 0, 35, 40);
+    [btn1 setImage:[UIImage imageNamed:@"icon_heyue"] forState:UIControlStateNormal];
+    [btn1 addTarget:self action:@selector(navACOne) forControlEvents:UIControlEventTouchUpInside];
+    [barView addSubview:btn1];
+    
+    UIButton *btn2 = [UIButton buttonWithType:UIButtonTypeCustom];
+    btn2.frame = CGRectMake(35, 0, 35, 40);
+    [btn2 setImage:[UIImage imageNamed:@"icon_less-1"] forState:UIControlStateNormal];
+    [btn2 setImage:[UIImage imageNamed:@"icon_collect_selected copy"] forState:UIControlStateSelected];
+    if (self.model.add_state == 1) {
+        btn2.selected = YES;
+    }else{
+        btn2.selected = NO;
+    }
+    
+    [btn2 addTarget:self action:@selector(navACTwo:) forControlEvents:UIControlEventTouchUpInside];
+    [barView addSubview:btn2];
+    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:barView];
+    
+    
+}
+
+- (void)navACOne
+{
+    ContractualattributesVC *vc = [ContractualattributesVC new];
+    vc.symbol = self.sybol;
+    [self.navigationController pushViewController:vc animated:YES];
+    
+}
+
+- (void)navACTwo:(UIButton *)sender
+{
+    
+    if (![LxUserDefaults boolForKey:IsLogin]) {
+        
+        LoginphoneVC *vc = [LoginphoneVC new];
+        vc.backIndex = YES;
+        BaseNavigationController *nav = [[BaseNavigationController alloc] initWithRootViewController:vc];
+        [self presentViewController:nav animated:YES completion:nil];
+        return;
+    }else{
+        
+        NSString *seletedMt4_id = [NSString stringWithFormat:@"%@",[LxUserDefaults objectForKey:Mt4_id]];
+        if (seletedMt4_id.length > 2) {
+            //有mt4账户
+            BADataEntity *entity = [BADataEntity new];
+            entity.urlString = [NSString stringWithFormat:@"%@%@",MainUrl,Url_userAction];
+            entity.needCache = NO;
+            if (self.model.add_state == 1) {
+                //已经添加
+                entity.parameters = @{@"types":@"7",@"mt4_id":seletedMt4_id,@"symbol":self.model.symbol,@"symbolName":self.model.symbolName,@"operate":@"Delete",@"operateForm":@"Ios"};
+            }else{
+                //-1未添加
+                entity.parameters = @{@"types":@"7",@"mt4_id":seletedMt4_id,@"symbol":self.model.symbol,@"symbolName":self.model.symbolName,@"operate":@"add"};
+            }
+            
+            [SVProgressHUD show];
+            [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeBlack];
+            
+            [BANetManager ba_request_POSTWithEntity:entity successBlock:^(id response) {
+                NSDictionary *result = response;
+                if ([result[@"code"] intValue] == 1) {
+                    //成功
+                    [SVProgressHUD dismiss];
+                    if (self.model.add_state == 1) {
+                        self.model.add_state = -1;
+                         [self xw_postNotificationWithName:OptionalNotice userInfo:@{@"add":@(NO)}];
+                    }else{
+                        self.model.add_state = 1;
+                         [self xw_postNotificationWithName:OptionalNotice userInfo:@{@"add":@(YES)}];
+
+                    }
+                    
+                    sender.selected = !sender.selected;
+                   
+                    
+                    
+                    
+                }else{
+                    
+                    [SVProgressHUD showErrorWithStatus:result[@"message"]];
+                    
+                }
+                
+                
+            } failureBlock:^(NSError *error) {
+                [SVProgressHUD showErrorWithStatus:error.userInfo[@"NSDebugDescription"]];
+                
+                
+            } progressBlock:^(int64_t bytesProgress, int64_t totalBytesProgress) {
+                
+            }];
+            
+            
+            
+            
+            
+        }else{
+            
+            MyTipAlert *alert = [[MyTipAlert alloc] initWithTipAlertWithTitle:@"您当前没有选中mt4账户" contentStr:@"是否跳转添加" btnStr:@"确定"];
+            alert.clickBlock = ^(int index) {
+                if (index == 0) {
+                    [self gotoVC];
+                    
+                }else{
+                    [MainTabBarController shareMainTabBarController].selectedIndex = 0;
+                }
+            };
+            [alert show];
+            return;
+        }
+    }
+    
+}
+
+- (void)gotoVC
+{
+    //账户管理
+    BADataEntity *entity = [BADataEntity new];
+    entity.urlString = [NSString stringWithFormat:@"%@%@",MainUrl,Url_MyCenter];
+    entity.needCache = NO;
+    entity.parameters = @{@"types":@"15",@"Access_Token":[LxUserDefaults objectForKey:Token]};
+    [SVProgressHUD show];
+    [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeBlack];
+    [BANetManager ba_request_POSTWithEntity:entity successBlock:^(id response) {
+        NSDictionary *result = response;
+        if ([result[@"code"] intValue] == 1) {
+            //成功
+            [SVProgressHUD dismiss];
+            NSArray *array = [Mt4Model mj_objectArrayWithKeyValuesArray:result[@"data"]];
+            AccountManagerVC *vc = [[AccountManagerVC alloc] init];
+            vc.dataList = array;
+            [self.navigationController pushViewController:vc animated:YES];
+        }else{
+            
+            [SVProgressHUD showErrorWithStatus:result[@"message"]];
+            
+        }
+        
+        
+    } failureBlock:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:error.userInfo[@"NSDebugDescription"]];
+        
+        
+    } progressBlock:^(int64_t bytesProgress, int64_t totalBytesProgress) {
+        
+    }];
+    
+}
+
+- (IBAction)guaAC:(id)sender {
+    
+//    QuickTransactionAlert *alert = [[QuickTransactionAlert alloc] initQuickTransactionAlert];
+//    [alert show];
+    
+    SellVC *vc = [[SellVC alloc] init];
+    vc.model = self.model;
+    [self.navigationController pushViewController:vc animated:YES];
+    
+}
+
+- (IBAction)sellAC:(id)sender {
+    
+    [self.view endEditing:YES];
+    if (![LxUserDefaults boolForKey:IsLogin]) {
+        
+        LoginphoneVC *vc = [LoginphoneVC new];
+        vc.backIndex = YES;
+        BaseNavigationController *nav = [[BaseNavigationController alloc] initWithRootViewController:vc];
+        [self presentViewController:nav animated:YES completion:nil];
+        return;
+    }else{
+        
+        NSString *seletedMt4_id = [NSString stringWithFormat:@"%@",[LxUserDefaults objectForKey:Mt4_id]];
+        if (seletedMt4_id.length > 2) {
+            if (self.countView.countTextField.text.length == 0) {
+                [SVProgressHUD showErrorWithStatus:@"请先设置手数！"];
+                return;
+            }
+            QuickTransactionAlert *alert = [[QuickTransactionAlert alloc] initQuickTransactionAlertWith:@"卖出" productStr:self.model.symbolName countStr:[self.countView getCurrentCount]];
+            alert.clickBlok = ^(int index) {
+                if (index == 1) {
+                     [self transactionWithOpentionStr:@"Sell" countStr:[self.countView getCurrentCount] price:[NSString stringWithFormat:@"%f",self.model.ask]] ;
+                }
+            };
+            [alert show];
+            
+        }else{
+            
+            MyTipAlert *alert = [[MyTipAlert alloc] initWithTipAlertWithTitle:@"您当前没有选中mt4账户" contentStr:@"是否跳转添加" btnStr:@"确定"];
+            alert.clickBlock = ^(int index) {
+                if (index == 0) {
+                    [self gotoVC];
+                    
+                }else{
+                    [MainTabBarController shareMainTabBarController].selectedIndex = 0;
+                }
+            };
+            [alert show];
+            return;
+        }
+    }
+    
+   
+    
+}
+- (IBAction)buyAC:(id)sender {
+    
+    [self.view endEditing:YES];
+
+    if (![LxUserDefaults boolForKey:IsLogin]) {
+        
+        LoginphoneVC *vc = [LoginphoneVC new];
+        vc.backIndex = YES;
+        BaseNavigationController *nav = [[BaseNavigationController alloc] initWithRootViewController:vc];
+        [self presentViewController:nav animated:YES completion:nil];
+        return;
+    }else{
+        
+        NSString *seletedMt4_id = [NSString stringWithFormat:@"%@",[LxUserDefaults objectForKey:Mt4_id]];
+        if (seletedMt4_id.length > 2) {
+            if (self.countView.countTextField.text.length == 0) {
+                [SVProgressHUD showErrorWithStatus:@"请先设置手数！"];
+                return;
+            }
+            QuickTransactionAlert *alert = [[QuickTransactionAlert alloc] initQuickTransactionAlertWith:@"买入" productStr:self.model.symbolName countStr:self.countView.countTextField.text];
+            alert.clickBlok = ^(int index) {
+                if (index == 1) {
+                    [self transactionWithOpentionStr:@"Buy" countStr:self.countView.countTextField.text price:[NSString stringWithFormat:@"%f",self.model.bid]];
+                }
+            };
+            [alert show];
+            
+        }else{
+            
+            MyTipAlert *alert = [[MyTipAlert alloc] initWithTipAlertWithTitle:@"您当前没有选中mt4账户" contentStr:@"是否跳转添加" btnStr:@"确定"];
+            alert.clickBlock = ^(int index) {
+                if (index == 0) {
+                    [self gotoVC];
+                    
+                }else{
+                    [MainTabBarController shareMainTabBarController].selectedIndex = 0;
+                }
+            };
+            [alert show];
+            return;
+        }
+    }
+    
+   
+}
+
+- (void)transactionWithOpentionStr:(NSString *)command
+                          countStr:(NSString *)countStr
+                             price:(NSString *)price
+{
+  
+    
+    BADataEntity *entity = [BADataEntity new];
+    entity.urlString = [NSString stringWithFormat:@"%@%@",MainUrl,Url_transactionAction];
+    entity.needCache = NO;
+    entity.parameters = @{@"types":@"1",@"Access_Token":[LxUserDefaults objectForKey:Token],@"mt4_id":[LxUserDefaults objectForKey:Mt4_id],@"symbol":self.model.symbol,@"type":@"OrderOpen",@"command":command,@"volume":countStr,@"price":price,@"order":@"",@"operateForm":@"Ios",@"sl":@"",@"tp":@""};
+    [SVProgressHUD show];
+    [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeBlack];
+    
+    [BANetManager ba_request_POSTWithEntity:entity successBlock:^(id response) {
+        NSDictionary *result = response;
+        if ([result[@"code"] intValue] == 1) {
+            //成功
+            [SVProgressHUD dismiss];
+            CSToastStyle *style = [[CSToastStyle alloc] initWithDefaultStyle];
+            style.titleColor = [UIColor whiteColor];
+            style.messageColor = [UIColor whiteColor];
+            style.maxWidthPercentage = 0.8;
+            style.maxHeightPercentage = 0.8;
+            style.horizontalPadding = 10;
+            style.verticalPadding = 10;
+            style.cornerRadius = 5;
+            style.messageFont = [UIFont systemFontOfSize:14.0];
+            style.imageSize = CGSizeMake(16, 15);
+            [self.view makeToast:[NSString stringWithFormat:@"您的订单已成交，成交数量为%@手",countStr]
+                                                 duration:2
+                                            position:CSToastPositionCenter
+                                                    title:nil
+                                                    image:[UIImage imageNamed:@"icon01"]
+                                                    style:style
+                                               completion:nil];
+            
+        }else{
+            
+            if([result[@"code"] intValue] == -1){
+                //登录
+                Mt4LoginAlert *alert = [[Mt4LoginAlert alloc] initTableViewAlertWithTitle:[NSString stringWithFormat:@"模拟账户：%@",[LxUserDefaults objectForKey:Mt4_id]]];
+                alert.loginBlcok = ^(int type) {
+                    if (type == 1) {
+                        ResetPWStartVC *vc = [[ResetPWStartVC alloc] init];
+                        vc.mt4Str = [LxUserDefaults objectForKey:Mt4_id];
+                        [self.navigationController pushViewController:vc animated:YES];
+                    }else{
+                        [SVProgressHUD showSuccessWithStatus:@"登录成功请继续交易"];
+                    }
+                };
+                [alert show];
+            }
+            [SVProgressHUD showErrorWithStatus:result[@"message"]];
+            
+        }
+        
+        
+    } failureBlock:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:error.userInfo[@"NSDebugDescription"]];
+        
+        
+    } progressBlock:^(int64_t bytesProgress, int64_t totalBytesProgress) {
+        
+    }];
+    
+}
+
+- (NSString *)changeFloatWithFloat:(CGFloat)floatValue
+{
+    return [self changeFloatWithString:[NSString stringWithFormat:@"%f",floatValue]];
+}
+
+- (NSString *)changeFloatWithString:(NSString *)stringFloat
+{
+    const char *floatChars = [stringFloat UTF8String];
+    NSUInteger length = [stringFloat length];
+    NSUInteger zeroLength = 0;
+    NSInteger i = length-1;
+    for(; i>=0; i--)
+    {
+        if(floatChars[i] == '0') {
+            zeroLength++;
+        } else {
+            if(floatChars[i] == '.')
+                i--;
+            break;
+        }
+    }
+    NSString *returnString;
+    if(i == -1) {
+        returnString = @"0";
+    } else {
+        returnString = [stringFloat substringToIndex:i+1];
+    }
+    return returnString;
+}
+
+@end

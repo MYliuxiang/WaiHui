@@ -1,0 +1,71 @@
+//
+//  RegistEmailVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/19.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "RegistEmailVC.h"
+#import "RegistSuccessVC.h"
+
+@interface RegistEmailVC ()
+@property (weak, nonatomic) IBOutlet UITextField *emailField;
+@property (weak, nonatomic) IBOutlet UILabel *emailLab;
+@property (weak, nonatomic) IBOutlet TXLimitedTextField *codeField;
+@property (weak, nonatomic) IBOutlet UILabel *codeLab;
+@property (weak, nonatomic) IBOutlet UIButton *codeBtn;
+@property (weak, nonatomic) IBOutlet TXLimitedTextField *pwField;
+@property (weak, nonatomic) IBOutlet UILabel *pwLab;
+@property (weak, nonatomic) IBOutlet UIButton *agreeMentBtn;
+@property (weak, nonatomic) IBOutlet UIImageView *agreementImg;
+
+@property (weak, nonatomic) IBOutlet UIView *agreeMentView;
+@property (weak, nonatomic) IBOutlet UIButton *doneBtn;
+
+@end
+
+@implementation RegistEmailVC
+
+- (IBAction)dismissAC:(id)sender {
+    
+    [self.navigationController popViewControllerAnimated:YES];
+
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.fd_prefersNavigationBarHidden = YES;
+    [self.doneBtn hyb_addCornerRadius:5 size:CGSizeMake(kScreenWidth - 60, 48)];
+
+
+}
+- (IBAction)doneAC:(id)sender {
+    RegistSuccessVC *vc = [RegistSuccessVC new];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (IBAction)registAC:(id)sender {
+    
+    if ([self.navigationController.viewControllers[self.navigationController.viewControllers.count - 2] isKindOfClass:[RegistPhoneVC class]]) {
+        [self.navigationController popViewControllerAnimated:YES];
+    }else{
+        
+        [self.navigationController pushViewController:[RegistPhoneVC new] animated:YES];
+        
+    }
+}
+
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

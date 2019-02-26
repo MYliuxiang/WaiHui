@@ -1,0 +1,44 @@
+//
+//  RealNameCardVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/14.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "RealNameCardVC.h"
+
+@interface RealNameCardVC ()
+
+@end
+
+@implementation RealNameCardVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.title = @"实名认证";
+    [self wr_setNavBarTitleColor:[MyColor colorWithHexString:@"#2E3145"]];
+
+}
+- (IBAction)backAC:(id)sender {
+    [self.navigationController popViewControllerAnimated:YES];
+}
+- (IBAction)doneAC:(id)sender {
+    
+    
+    RealOrBankVC *vc = [RealOrBankVC new];
+    vc.successType = SuccessTypeReal; [self.navigationController pushViewController:vc animated:YES];
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

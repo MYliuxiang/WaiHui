@@ -1,0 +1,39 @@
+//
+//  HttpHelp.h
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/24.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+/*
+ 测试登录账号
+ 测试帐号：18580744910   密码:Qo123456
+ 帐号:13723706079 密码:Qo123456
+ */
+
+extern NSString *const IsLogin;
+
+extern NSString *const Token;
+
+extern NSString *const Phone;
+
+
+
+extern NSString *const MainUrl;
+extern NSString *const Url_userAction;
+extern NSString *const Url_MyCenter;
+
+
+
+
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface HttpHelp : NSObject
+
+@end
+
+NS_ASSUME_NONNULL_END

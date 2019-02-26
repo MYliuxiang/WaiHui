@@ -1,0 +1,349 @@
+//
+//  AccountManagerVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/14.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "AccountManagerVC.h"
+
+@interface AccountManagerVC ()
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (nonatomic,assign) BOOL haveSim;
+@property (nonatomic,assign) BOOL Account;
+@property (weak, nonatomic) IBOutlet UIButton *addBtn;
+
+
+@end
+
+@implementation AccountManagerVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.title = @"账户管理";
+    
+    [self.addBtn hyb_addCornerRadius:5 size:CGSizeMake(kScreenWidth - 30, 44)];
+    [self handlerData];
+    
+    [self xw_addNotificationForName:AccountMangerNotice block:^(NSNotification * _Nonnull notification) {
+        [self loadData];
+    }];
+          
+}
+
+- (void)handlerData
+{
+    for (Mt4Model *model in self.dataList) {
+        if (model.user_type == 1 || model.user_type == 12) {
+            self.haveSim = YES;
+        }else{
+            self.Account = YES;
+        }
+        
+    }
+    if (self.Account) {
+        self.addBtn.hidden = NO;
+    }else{
+        self.addBtn.hidden = YES;
+        
+    }
+    
+    if(self.dataList.count == 0){
+        
+        [self wr_setNavBarTitleColor:[MyColor colorWithHexString:@"#2E3145"]];
+        [self wr_setNavBarBarTintColor:[UIColor whiteColor]];
+        
+        
+        self.tableView.backgroundColor = [MyColor colorWithHexString:@"#F7F9FE"];
+        self.view.backgroundColor = [MyColor colorWithHexString:@"#F7F9FE"];
+        
+    }else{
+        
+        [self wr_setNavBarBarTintColor:[MyColor colorWithHexString:@"#435B9B"]];
+        [self wr_setNavBarTitleColor:[MyColor colorWithHexString:@"#FAFBFE "]];
+        self.view.backgroundColor = [MyColor colorWithHexString:@"#435B9B"];
+        self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 84, 0);
+    }
+    [self.tableView reloadData];
+    
+}
+
+- (void)loadData{
+    
+    BADataEntity *entity = [BADataEntity new];
+    entity.urlString = [NSString stringWithFormat:@"%@%@",MainUrl,Url_MyCenter];
+    entity.needCache = NO;
+    entity.parameters = @{@"types":@"15",@"Access_Token":[LxUserDefaults objectForKey:Token]};
+    [SVProgressHUD show];
+    [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeBlack];
+    [BANetManager ba_request_POSTWithEntity:entity successBlock:^(id response) {
+        NSDictionary *result = response;
+        if ([result[@"code"] intValue] == 1) {
+            //成功
+            [SVProgressHUD dismiss];
+            self.dataList = [Mt4Model mj_objectArrayWithKeyValuesArray:result[@"data"][@"list"]];
+            [self handlerData];
+            
+        }else{
+            
+            [SVProgressHUD showErrorWithStatus:result[@"message"]];
+            
+        }
+        
+        
+    } failureBlock:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:error.userInfo[@"NSDebugDescription"]];
+        
+        
+    } progressBlock:^(int64_t bytesProgress, int64_t totalBytesProgress) {
+        
+    }];
+    
+}
+
+#pragma  mark --------UITableView Delegete----------
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    if (self.dataList.count == 0) {
+        return 2;
+    }
+    NSInteger numeber;
+    numeber = self.dataList.count;
+    if (!_haveSim) {
+        numeber++;
+    }
+   
+    return numeber;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    if (self.dataList.count == 0) {
+        
+        if (indexPath.row == 0) {
+            
+            static NSString *identifire = @"cellIDtwo";
+            OpenAccountCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+            if (cell == nil) {
+                cell = [[[NSBundle mainBundle] loadNibNamed:@"OpenAccountCell" owner:nil options:nil] lastObject];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                
+            }
+            
+            return cell;
+           
+        }else{
+            static NSString *identifire = @"cellIDone";
+            OpenSimulationCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+            if (cell == nil) {
+                cell = [[[NSBundle mainBundle] loadNibNamed:@"OpenSimulationCell" owner:nil options:nil] lastObject];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                
+            }
+            
+            return cell;
+        }
+    }else{
+        if (indexPath.row > self.dataList.count - 1) {
+          
+            static NSString *identifire = @"cellIDone";
+            OpenSimulationCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+            if (cell == nil) {
+                cell = [[[NSBundle mainBundle] loadNibNamed:@"OpenSimulationCell" owner:nil options:nil] lastObject];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                
+            }
+            return cell;
+            
+        }else{
+            Mt4Model *model = self.dataList[indexPath.row];
+            if (model.user_type == 1 || model.user_type == 12) {
+                //模拟账户
+                static NSString *identifire = @"cellIDthree";
+                SimulationCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+                if (cell == nil) {
+                    cell = [[[NSBundle mainBundle] loadNibNamed:@"SimulationCell" owner:nil options:nil] lastObject];
+                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                    
+                }
+                cell.moreBlock = ^{
+                    AccountMoreVC *vc = [[AccountMoreVC alloc] init];
+                    vc.type = 0;
+                    vc.model = model;
+                    [self.navigationController pushViewController:vc animated:YES];
+                    
+                };
+                
+                cell.switchBlock = ^{
+                    
+                    
+                    if (model.is_login) {
+                        [self qiehuan:model.mt4_id];
+                    }else{
+                        
+                        Mt4LoginAlert *alert = [[Mt4LoginAlert alloc] initTableViewAlertWithTitle:[NSString stringWithFormat:@"模拟账户：%@",model.mt4_id]];
+                        alert.loginBlcok = ^(int type) {
+                            if (type == 1) {
+                                ResetPWStartVC *vc = [[ResetPWStartVC alloc] init];
+                                vc.mt4Str = model.mt4_id;
+                                [self.navigationController pushViewController:vc animated:YES];
+                            }else{
+                                [self qiehuan:model.mt4_id];
+
+                            }
+                        };
+                        [alert show];
+                    }
+
+                    };
+                    
+                cell.model = model;
+                
+                return cell;
+            }else{
+                //真实账户
+                static NSString *identifire = @"cellIDfour";
+                AccountCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+                if (cell == nil) {
+                    cell = [[[NSBundle mainBundle] loadNibNamed:@"AccountCell" owner:nil options:nil] lastObject];
+                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                    
+                }
+                
+                cell.model = model;
+                cell.moreBlock = ^{
+                    AccountMoreVC *vc = [[AccountMoreVC alloc] init];
+                    vc.type = 1;
+                    vc.model = model;
+                    [self.navigationController pushViewController:vc animated:YES];
+                    
+                };
+                
+                cell.switchBlock = ^{
+                    if (model.is_login) {
+                        [self qiehuan:model.mt4_id];
+                    }else{
+                        
+                        Mt4LoginAlert *alert = [[Mt4LoginAlert alloc] initTableViewAlertWithTitle:[NSString stringWithFormat:@"模拟账户：%@",model.mt4_id]];
+                        alert.loginBlcok = ^(int type) {
+                            if (type == 1) {
+                                ResetPWStartVC *vc = [[ResetPWStartVC alloc] init];
+                                vc.mt4Str = model.mt4_id;
+                                [self.navigationController pushViewController:vc animated:YES];
+                            }else{
+                                [self qiehuan:model.mt4_id];
+
+                            }
+                        };
+                        [alert show];
+                    }
+                };
+                
+
+
+                return cell;
+                
+            }
+        }
+        
+    }
+}
+
+- (void)qiehuan:(NSString *)mt4id
+{
+    BADataEntity *entity = [BADataEntity new];
+    entity.urlString = [NSString stringWithFormat:@"%@%@",MainUrl,Url_MyCenter];
+    entity.needCache = NO;
+    entity.parameters = @{@"types":@"22",@"Access_Token":[LxUserDefaults objectForKey:Token],@"mt4_id":mt4id};
+    [SVProgressHUD show];
+    [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeBlack];
+    
+    [BANetManager ba_request_POSTWithEntity:entity successBlock:^(id response) {
+        NSDictionary *result = response;
+        if ([result[@"code"] intValue] == 1) {
+            //成功
+            [SVProgressHUD dismiss];
+            [LxUserDefaults setObject:mt4id forKey:Mt4_id];
+            [self xw_postNotificationWithName:LoginCompletionNotice userInfo:nil];
+            [self loadData];
+
+        }else{
+            
+            [SVProgressHUD showErrorWithStatus:result[@"message"]];
+            
+        }
+        
+        
+    } failureBlock:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:error.userInfo[@"NSDebugDescription"]];
+        
+        
+    } progressBlock:^(int64_t bytesProgress, int64_t totalBytesProgress) {
+        
+    }];
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 148;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    
+    return 0.1;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0;
+    
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    
+    
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+- (IBAction)addMt4AC:(id)sender {
+    
+    if ([LxUserDefaults integerForKey:Id_Card_Status] == 3) {
+        MyTipAlert *alert = [[MyTipAlert alloc] initWithTipAlertWithTitle:@"身份认证提示" contentStr:@"您的身份信息尚未认证，请先完成认证！" btnStr:@"马上认证"];
+        alert.clickBlock = ^(int index) {
+            if (index == 0) {
+                RealNameVC *vc = [RealNameVC new];
+                [self.navigationController pushViewController:vc animated:YES];
+            }
+        };
+        [alert show];
+        return;
+        
+    }
+    AddMt4VC *vc = [AddMt4VC new];
+    vc.type = RealRAccount;
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+@end

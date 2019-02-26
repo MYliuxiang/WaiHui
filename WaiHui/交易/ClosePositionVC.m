@@ -1,0 +1,317 @@
+//
+//  ClosePositionVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/11.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "ClosePositionVC.h"
+
+@interface ClosePositionVC ()<JXPagerViewListViewDelegate>
+
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property(nonatomic,retain) NSMutableArray *dataList;
+@property (weak, nonatomic) IBOutlet UILabel *countLab;
+@property (weak, nonatomic) IBOutlet UILabel *incomLab;
+
+@property (strong, nonatomic) IBOutlet UIView *headerView;
+@property (weak, nonatomic) IBOutlet UIButton *btn1;
+@property (weak, nonatomic) IBOutlet UIButton *btn2;
+@property (weak, nonatomic) IBOutlet UIButton *btn3;
+@property (nonatomic, copy) void(^scrollCallback)(UIScrollView *scrollView);
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activity;
+
+@property (nonatomic,copy) NSString *timeFlag;
+
+@end
+
+@implementation ClosePositionVC
+
+
+- (IBAction)btnAC:(id)sender {
+    
+    UIButton *btn = (UIButton *)sender;
+    NSInteger index = btn.tag - 100;
+    switch (index) {
+        case 0:
+        {
+            if (![self.timeFlag isEqualToString:@"day"]) {
+                self.timeFlag = @"day";
+                self.btn1.backgroundColor = [MyColor colorWithHexString:@"#435B9B"];
+                self.btn1.titleLabel.textColor = [UIColor whiteColor];
+                self.btn1.layer.borderColor = [MyColor colorWithHexString:@"#D6DCED"].CGColor;
+                self.btn1.layer.borderWidth = 0;
+                
+                self.btn2.backgroundColor = [UIColor clearColor];
+                self.btn2.titleLabel.textColor = [MyColor colorWithHexString:@"#7D82A5"];
+                self.btn2.layer.borderColor = [MyColor colorWithHexString:@"#D6DCED"].CGColor;
+                self.btn2.layer.borderWidth = 1;
+                
+                self.btn3.backgroundColor = [UIColor clearColor];
+                self.btn3.titleLabel.textColor = [MyColor colorWithHexString:@"#7D82A5"];
+                self.btn3.layer.borderColor = [MyColor colorWithHexString:@"#D6DCED"].CGColor;
+                self.btn3.layer.borderWidth = 1;
+                [self downLoad];
+            }
+          
+            
+        }
+            break;
+        case 1:
+        {
+            if (![self.timeFlag isEqualToString:@"week"]) {
+                self.timeFlag = @"week";
+                self.btn2.backgroundColor = [MyColor colorWithHexString:@"#435B9B"];
+                self.btn2.titleLabel.textColor = [UIColor whiteColor];
+                self.btn2.layer.borderColor = [MyColor colorWithHexString:@"#D6DCED"].CGColor;
+                self.btn2.layer.borderWidth = 0;
+                
+                self.btn1.backgroundColor = [UIColor clearColor];
+                self.btn1.titleLabel.textColor = [MyColor colorWithHexString:@"#7D82A5"];
+                self.btn1.layer.borderColor = [MyColor colorWithHexString:@"#D6DCED"].CGColor;
+                self.btn1.layer.borderWidth = 1;
+                
+                self.btn3.backgroundColor = [UIColor clearColor];
+                self.btn3.titleLabel.textColor = [MyColor colorWithHexString:@"#7D82A5"];
+                self.btn3.layer.borderColor = [MyColor colorWithHexString:@"#D6DCED"].CGColor;
+                self.btn3.layer.borderWidth = 1;
+                
+                [self downLoad];
+
+            }
+            
+        }
+            break;
+        case 2:
+        {
+            if (![self.timeFlag isEqualToString:@"month"]) {
+                self.timeFlag = @"month";
+                self.btn3.backgroundColor = [MyColor colorWithHexString:@"#435B9B"];
+                self.btn3.titleLabel.textColor = [UIColor whiteColor];
+                self.btn3.layer.borderColor = [MyColor colorWithHexString:@"#D6DCED"].CGColor;
+                self.btn3.layer.borderWidth = 0;
+                
+                self.btn2.backgroundColor = [UIColor clearColor];
+                self.btn2.titleLabel.textColor = [MyColor colorWithHexString:@"#7D82A5"];
+                self.btn2.layer.borderColor = [MyColor colorWithHexString:@"#D6DCED"].CGColor;
+                self.btn2.layer.borderWidth = 1;
+                
+                self.btn1.backgroundColor = [UIColor clearColor];
+                self.btn1.titleLabel.textColor = [MyColor colorWithHexString:@"#7D82A5"];
+                self.btn1.layer.borderColor = [MyColor colorWithHexString:@"#D6DCED"].CGColor;
+                self.btn1.layer.borderWidth = 1;
+
+                [self downLoad];
+
+            }
+        }
+            break;
+            
+        default:
+            break;
+    }
+    
+}
+
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.dataList = [NSMutableArray array];
+    self.activity.hidden = YES;
+    self.timeFlag = @"day";
+    
+    self.btn1.layer.cornerRadius = 9;
+    self.btn1.layer.masksToBounds = YES;
+    self.btn2.layer.cornerRadius = 9;
+    self.btn2.layer.masksToBounds = YES;
+    self.btn3.layer.cornerRadius = 9;
+    self.btn3.layer.masksToBounds = YES;
+    
+    self.btn1.backgroundColor = [MyColor colorWithHexString:@"#435B9B"];
+    self.btn1.titleLabel.textColor = [UIColor whiteColor];
+    self.btn1.layer.borderColor = [MyColor colorWithHexString:@"#D6DCED"].CGColor;
+    self.btn1.layer.borderWidth = 0;
+    
+    self.btn2.backgroundColor = [UIColor clearColor];
+    self.btn2.titleLabel.textColor = [MyColor colorWithHexString:@"#7D82A5"];
+    self.btn2.layer.borderColor = [MyColor colorWithHexString:@"#D6DCED"].CGColor;
+    self.btn2.layer.borderWidth = 1;
+    
+    self.btn3.backgroundColor = [UIColor clearColor];
+    self.btn3.titleLabel.textColor = [MyColor colorWithHexString:@"#7D82A5"];
+    self.btn3.layer.borderColor = [MyColor colorWithHexString:@"#D6DCED"].CGColor;
+    self.btn3.layer.borderWidth = 1;
+    
+    
+    
+    self.tableView.mj_footer = [LxRefreshFooter footerWithRefreshingTarget:self refreshingAction:@selector(upLoad)];
+    [self.tableView.mj_header beginRefreshing];
+    [self downLoad];
+}
+
+- (void)downLoad
+{
+    self.activity.hidden = NO;
+    [self.activity startAnimating];
+    self.pageOffset = 1;
+    [self loadsubData];
+}
+
+- (void)upLoad
+{
+    self.activity.hidden = YES;
+    [self.activity startAnimating];
+    [self loadsubData];
+    
+}
+
+
+- (void)loadsubData
+{
+   
+    
+    self.tableView.ly_emptyView = self.noDataView;
+    [self.tableView ly_startLoading];
+    self.noDataView.titleStr = @"暂无平仓记录";
+    
+    BADataEntity *entity = [BADataEntity new];
+    entity.urlString = [NSString stringWithFormat:@"%@%@",MainUrl,Url_transactionAction];
+    entity.needCache = NO;
+    entity.parameters = @{@"types":@"3",@"mt4_id":self.mt4Str,@"page":[NSString stringWithFormat:@"%d",self.pageOffset],@"timeFlag":self.timeFlag};
+    
+    [BANetManager ba_request_POSTWithEntity:entity successBlock:^(id response) {
+        NSDictionary *result = response;
+        
+        
+        if ([result[@"code"] intValue] == 1) {
+            //成功
+            if (self.pageOffset == 1) {
+                self.dataList = [CloseModel mj_objectArrayWithKeyValuesArray:result[@"data"]];
+            }else{
+               [self.dataList addObjectsFromArray:[CloseModel mj_objectArrayWithKeyValuesArray:result[@"data"]]];
+            }
+            self.pageOffset++;
+            self.activity.hidden = YES;
+            [self.activity stopAnimating];
+//            self.dataList = [CloseModel mj_objectArrayWithKeyValuesArray:result[@"data"]];
+            self.countLab.text = [NSString stringWithFormat:@"平仓手数：%@",result[@"volume_all"]];
+            self.incomLab.text = [NSString stringWithFormat:@"$%@",result[@"profit_all"]];
+            [self.tableView reloadData];
+            [self.tableView ly_endLoading];
+            
+        }else{
+            
+            self.activity.hidden = YES;
+            [self.activity stopAnimating];
+            [SVProgressHUD showErrorWithStatus:result[@"message"]];
+            self.tableView.ly_emptyView = self.systemExceptionView;
+            [self.tableView ly_endLoading];
+            
+        }
+        
+        if ([result[@"is_more"] intValue] == -1){
+            [self.tableView.mj_footer endRefreshing];
+             [self.tableView.mj_footer endRefreshingWithNoMoreData];
+        }else{
+            [self.tableView.mj_footer endRefreshing];
+            [self.tableView.mj_footer resetNoMoreData];
+        }
+        
+        
+    } failureBlock:^(NSError *error) {
+        self.activity.hidden = YES;
+        [self.activity stopAnimating];
+        
+        self.tableView.ly_emptyView = self.systemExceptionView;
+        [self.tableView ly_endLoading];
+        [self.tableView.mj_footer endRefreshing];
+        
+        
+        
+    } progressBlock:^(int64_t bytesProgress, int64_t totalBytesProgress) {
+        
+    }];
+    
+    
+}
+
+#pragma  mark --------UITableView Delegete----------
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.dataList.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    static NSString *identifire = @"cellID";
+    CloseCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+    if (cell == nil) {
+        cell = [[[NSBundle mainBundle] loadNibNamed:@"CloseCell" owner:nil options:nil] lastObject];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    }
+    
+    cell.model = self.dataList[indexPath.row];
+    
+    return cell;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    HoldModel *model = self.dataList[indexPath.row];
+    return [self.tableView cellHeightForIndexPath:indexPath model:model keyPath:@"model" cellClass:[CloseCell class] contentViewWidth:kScreenWidth];;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    
+    return 31;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.1;
+    
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    return self.headerView;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    !self.scrollCallback ?: self.scrollCallback(scrollView);
+}
+
+#pragma mark - JXPagingViewListViewDelegate
+- (UIView *)listView {
+    return self.view;
+}
+
+
+- (UIScrollView *)listScrollView {
+    return self.tableView;
+}
+
+
+- (void)listViewDidScrollCallback:(void (^)(UIScrollView *))callback {
+    self.scrollCallback = callback;
+}
+
+@end

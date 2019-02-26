@@ -1,0 +1,99 @@
+//
+//  QuotationListVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/6.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "QuotationListVC.h"
+
+@interface QuotationListVC ()
+
+@end
+
+@implementation QuotationListVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+//    self.tableView.ly_emptyView = [LxEmptyView noDataEmpty];
+//    [self.tableView ly_showEmptyView];
+}
+
+- (void)loadDataForFirst
+{
+    NSLog(@"第一次加载");
+    
+}
+
+
+#pragma  mark --------UITableView Delegete----------
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 10;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    static NSString *identifire = @"cellID";
+    QuoTationListCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+    if (cell == nil) {
+        cell = [[[NSBundle mainBundle] loadNibNamed:@"QuoTationListCell" owner:nil options:nil] lastObject];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
+    }
+    
+    return cell;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 60;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    
+    return 24;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.1;
+    
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    DetailQuotationVC *vc = [[DetailQuotationVC alloc] init];
+    [self.navigationController pushViewController:vc animated:YES];
+    
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    return self.headerView;
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

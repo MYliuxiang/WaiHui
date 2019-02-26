@@ -1,0 +1,646 @@
+//
+//  TransactionVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/6.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "TransactionVC.h"
+
+@interface TransactionVC ()<JXCategoryViewDelegate,JXPagerViewDelegate>
+@property (weak, nonatomic) IBOutlet UIView *headerView;
+@property (strong, nonatomic) IBOutlet NavTitleView *mytitle;
+@property (strong, nonatomic) IBOutlet UIButton *rightBtn;
+@property (weak, nonatomic) IBOutlet UILabel *mytitleLab;
+@property (weak, nonatomic) IBOutlet UIButton *trancitonBtn;
+
+@property (weak, nonatomic) IBOutlet UILabel *totalLab;
+
+@property (weak, nonatomic) IBOutlet UILabel *lab1;
+
+@property (weak, nonatomic) IBOutlet UILabel *lab2;
+
+@property (weak, nonatomic) IBOutlet UILabel *lab3;
+
+@property (weak, nonatomic) IBOutlet UILabel *lab4;
+
+@property (nonatomic,assign) BOOL isHave;
+
+@property (nonatomic, strong) JXCategoryTitleView *categoryView;
+@property (nonatomic, strong) NSMutableArray *listVCArray;
+@property (nonatomic, strong) JXCategoryListVCContainerView *listVCContainerView;
+@property (nonatomic, strong) NSArray <NSString *> *titles;
+
+@property (nonatomic, strong) JXPagerView *pagerView;
+@property (nonatomic, strong) NSMutableArray *listViewArray;
+@property (nonatomic,strong) UIView *demoheaderView;
+@property (nonatomic,strong) Mt4Balance *model;
+
+@property (nonatomic,strong) TestListBaseView *empity;
+@property (nonatomic,assign) BOOL mt4Have;
+
+@property (nonatomic,strong) NSArray *accountList;
+
+@property (nonatomic,strong) MyModel *myModel;
+
+
+@end
+
+@implementation TransactionVC
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+
+    if (![LxUserDefaults boolForKey:IsLogin]) {
+        
+        LoginphoneVC *vc = [LoginphoneVC new];
+        vc.backIndex = YES;
+        BaseNavigationController *nav = [[BaseNavigationController alloc] initWithRootViewController:vc];
+        [self presentViewController:nav animated:YES completion:nil];
+        return;
+    }
+    
+   
+}
+
+
+- (void)setSeltedIndex:(NSInteger)seltedIndex
+{
+    _seltedIndex = seltedIndex;
+    [self.categoryView selectItemAtIndex:seltedIndex];
+}
+
+- (void)creatSubViews
+{
+    self.mytitle.intrinsicContentSize = CGSizeMake(200, 40);
+    self.rightBtn.layer.cornerRadius = 10.5;
+    self.rightBtn.layer.masksToBounds = YES;
+    self.rightBtn.layer.borderWidth = .5;
+    self.rightBtn.layer.borderColor = [MyColor colorWithHexString:@"#90A4D9"].CGColor;
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.rightBtn];
+    
+    self.empity = [[TestListBaseView alloc] init];
+    self.empity.height = kScreenHeight - Height_NavBar - Height_TabBar;
+    
+    [self.trancitonBtn hyb_addCornerRadius:10 size:CGSizeMake(60, 20)];
+    
+    _titles = @[@"持仓", @"挂单", @"平仓记录"];
+    
+    _listViewArray = [NSMutableArray array];
+
+    _demoheaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 200)];
+    self.categoryView = [[JXCategoryTitleView alloc] init];
+    self.categoryView.frame = CGRectMake(0, 0, kScreenWidth, 40);
+    self.categoryView.delegate = self;
+    self.categoryView.cellWidth = kScreenWidth / 3;
+    self.categoryView.contentEdgeInsetLeft = 0;
+    self.categoryView.cellSpacing = 0;
+    self.categoryView.contentEdgeInsetRight = 0;
+    
+    self.categoryView.titles = _titles;
+    self.categoryView.titleColor = [MyColor colorWithHexString:@"#858296"];
+    self.categoryView.titleSelectedColor = [MyColor colorWithHexString:@"#2B2B76"];
+    self.categoryView.titleFont = [UIFont systemFontOfSize:14];
+    JXCategoryIndicatorLineView *lineView = [[JXCategoryIndicatorLineView alloc] init];
+    lineView.indicatorLineViewColor = [MyColor colorWithHexString:@"#2B2B76"];
+    lineView.indicatorLineViewCornerRadius = 1.5;
+    lineView.lineScrollOffsetX = -40;
+    lineView.indicatorLineWidth = JXCategoryViewAutomaticDimension;
+    self.categoryView.indicators = @[lineView];
+    
+    _pagerView = [self preferredPagingView];
+    [self.view addSubview:self.pagerView];
+    self.categoryView.backgroundColor = [UIColor whiteColor];
+    self.categoryView.contentScrollView = self.pagerView.listContainerView.collectionView;
+    
+    //扣边返回处理，下面的代码要加上
+    [self.pagerView.listContainerView.collectionView.panGestureRecognizer requireGestureRecognizerToFail:self.navigationController.interactivePopGestureRecognizer];
+    [self.pagerView.mainTableView.panGestureRecognizer requireGestureRecognizerToFail:self.navigationController.interactivePopGestureRecognizer];
+    self.navigationController.interactivePopGestureRecognizer.enabled = (self.categoryView.selectedIndex == 0);
+    
+    
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.title = @"交易";
+    [self wr_setNavBarBarTintColor:[MyColor colorWithHexString:@"#435B9B"]];
+    [self wr_setNavBarTitleColor:[UIColor whiteColor]];
+    [self wr_setNavBarShadowImageHidden:YES];
+    _headerView.height = 200;
+    [self checkNetWork];
+    [self xw_addNotificationForName:LoginCompletionNotice block:^(NSNotification * _Nonnull notification) {
+        [self checkNetWork];
+    }];
+    
+}
+
+- (IBAction)tapTitleViewAC:(id)sender {
+    
+    [self loadAccountView];
+
+}
+
+- (void)loadAccountView
+{
+    BADataEntity *entity = [BADataEntity new];
+    entity.urlString = [NSString stringWithFormat:@"%@%@",MainUrl,Url_MyCenter];
+    entity.needCache = NO;
+    entity.parameters = @{@"types":@"15",@"Access_Token":[LxUserDefaults objectForKey:Token]};
+    [SVProgressHUD show];
+    [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeBlack];
+    [BANetManager ba_request_POSTWithEntity:entity successBlock:^(id response) {
+        NSDictionary *result = response;
+        if ([result[@"code"] intValue] == 1) {
+            //成功
+            [SVProgressHUD dismiss];
+            self.accountList = [Mt4Model mj_objectArrayWithKeyValuesArray:result[@"data"][@"list"]];
+            NSMutableArray *marray = [NSMutableArray array];
+            for (Mt4Model *model in self.accountList) {
+                [marray addObject:model.mt4_id];
+            }
+                TableViewAlert *alert = [[TableViewAlert alloc] initTableViewAlertWithTitle:@"选择账户" withDatasource:marray];
+                alert.clickBlock = ^(int index) {
+               
+                    Mt4Model *model = self.accountList[index];
+                    if (![marray[index] isEqualToString:[LxUserDefaults objectForKey:Mt4_id]]) {
+                        
+                        if (model.is_login) {
+                            [self qiehuan:model.mt4_id];
+                        }else{
+                            
+                            Mt4LoginAlert *alert = [[Mt4LoginAlert alloc] initTableViewAlertWithTitle:[NSString stringWithFormat:@"模拟账户：%@",model.mt4_id]];
+                            alert.loginBlcok = ^(int type) {
+                                if (type == 1) {
+                                    ResetPWStartVC *vc = [[ResetPWStartVC alloc] init];
+                                    vc.mt4Str = model.mt4_id;
+                                    [self.navigationController pushViewController:vc animated:YES];
+                                }else{
+                                    [self qiehuan:model.mt4_id];
+                                    
+                                }
+                            };
+                            [alert show];
+                        }
+                    };
+                        
+                };
+                [alert show];
+            
+        }else{
+            
+            [SVProgressHUD showErrorWithStatus:result[@"message"]];
+            
+        }
+        
+        
+    } failureBlock:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:error.userInfo[@"NSDebugDescription"]];
+        
+    } progressBlock:^(int64_t bytesProgress, int64_t totalBytesProgress) {
+        
+    }];
+    
+}
+
+- (void)qiehuan:(NSString *)mt4id
+{
+    BADataEntity *entity = [BADataEntity new];
+    entity.urlString = [NSString stringWithFormat:@"%@%@",MainUrl,Url_MyCenter];
+    entity.needCache = NO;
+    entity.parameters = @{@"types":@"22",@"Access_Token":[LxUserDefaults objectForKey:Token],@"mt4_id":mt4id};
+    [SVProgressHUD show];
+    [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeBlack];
+    
+    [BANetManager ba_request_POSTWithEntity:entity successBlock:^(id response) {
+        NSDictionary *result = response;
+        if ([result[@"code"] intValue] == 1) {
+            //成功
+            [SVProgressHUD dismiss];
+            [LxUserDefaults setObject:mt4id forKey:Mt4_id];
+            [self xw_postNotificationWithName:LoginCompletionNotice userInfo:nil];
+            
+        }else{
+            
+            [SVProgressHUD showErrorWithStatus:result[@"message"]];
+            
+        }
+        
+        
+    } failureBlock:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:error.userInfo[@"NSDebugDescription"]];
+        
+        
+    } progressBlock:^(int64_t bytesProgress, int64_t totalBytesProgress) {
+        
+    }];
+    
+}
+
+
+
+- (void)gotoVC
+{
+    //账户管理
+    BADataEntity *entity = [BADataEntity new];
+    entity.urlString = [NSString stringWithFormat:@"%@%@",MainUrl,Url_MyCenter];
+    entity.needCache = NO;
+    entity.parameters = @{@"types":@"15",@"Access_Token":[LxUserDefaults objectForKey:Token]};
+    [SVProgressHUD show];
+    [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeBlack];
+    [BANetManager ba_request_POSTWithEntity:entity successBlock:^(id response) {
+        NSDictionary *result = response;
+        if ([result[@"code"] intValue] == 1) {
+            //成功
+            [SVProgressHUD dismiss];
+            NSArray *array = [Mt4Model mj_objectArrayWithKeyValuesArray:result[@"data"]];
+            AccountManagerVC *vc = [[AccountManagerVC alloc] init];
+            vc.dataList = array;
+            [self.navigationController pushViewController:vc animated:YES];
+        }else{
+            
+            [SVProgressHUD showErrorWithStatus:result[@"message"]];
+            
+        }
+        
+        
+    } failureBlock:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:error.userInfo[@"NSDebugDescription"]];
+        
+        
+    } progressBlock:^(int64_t bytesProgress, int64_t totalBytesProgress) {
+        
+    }];
+    
+}
+
+- (void)checkNetWork
+{
+    
+    if([LxUserDefaults boolForKey:IsLogin]){
+        
+        NSString *seletedMt4_id = [NSString stringWithFormat:@"%@",[LxUserDefaults objectForKey:Mt4_id]];
+        if (seletedMt4_id.length > 2) {
+            //有mt4账户
+            if (self.pagerView == nil) {
+                [self creatSubViews];
+            }
+            self.mt4Have = YES;
+            self.navigationItem.titleView = self.mytitle;
+            self.mytitleLab.text = seletedMt4_id;
+            __weak typeof(self) weakSelf = self;
+            Reachability *reachability = [Reachability reachabilityWithHostName:@"www.baidu.com"];
+            if ([reachability currentReachabilityStatus] == NotReachable) {
+                self.empity.ly_emptyView = self.noNetView;
+                //        [self.pagerView.mainTableView ly_showEmptyView];
+                [self.empity ly_endLoading];
+                [LxDelayed delayedTime:1 withActionBlock:^{
+                    [weakSelf checkNetWork];
+                }];
+                
+            }else{
+               
+               
+                self.pagerView.mainTableView.mj_header = [LxResfreshHeader headerWithRefreshingTarget:self refreshingAction:@selector(downLoad)];
+           
+                [self.pagerView.mainTableView.mj_header beginRefreshing];
+                
+            }
+        }else{
+            //没有mt4账户
+            //跳转账户管理
+            self.mt4Have = NO;
+            MyTipAlert *alert = [[MyTipAlert alloc] initWithTipAlertWithTitle:@"您当前没有选中mt4账户" contentStr:@"是否跳转添加" btnStr:@"确定"];
+            alert.clickBlock = ^(int index) {
+                if (index == 0) {
+                    [self gotoVC];
+                    
+                }else{
+                    [MainTabBarController shareMainTabBarController].selectedIndex = 0;
+                }
+            };
+            [alert show];
+            return;
+            
+        }
+    }
+    
+}
+
+- (IBAction)gotoQuationVC:(id)sender {
+    
+    MainTabBarController *vc= [MainTabBarController shareMainTabBarController];
+    vc.selectedIndex = 0;
+    
+}
+- (IBAction)rightAC:(id)sender {
+    [self loadDataMyModel];
+}
+
+- (void)cashINOrOUT
+{
+    
+  
+    
+    if (self.myModel.phone.length == 0 || self.myModel.email == 0) {
+        MyTipAlert *alert = [[MyTipAlert alloc] initWithTipAlertWithTitle:@"个人信息提示" contentStr:@"您的个人信息尚未完善，请先完善个人信息" btnStr:@"马上完善"];
+        alert.clickBlock = ^(int index) {
+            if (index == 0) {
+                SafeMangerVC *vc = [[SafeMangerVC alloc] init];
+                [self.navigationController pushViewController:vc animated:YES];
+            }
+        };
+        [alert show];
+        return;
+    }
+    
+        if (self.myModel.id_card_status == 3) {
+            MyTipAlert *alert = [[MyTipAlert alloc] initWithTipAlertWithTitle:@"身份认证提示" contentStr:@"您的身份信息尚未认证，请先完成认证！" btnStr:@"马上认证"];
+            alert.clickBlock = ^(int index) {
+    
+                if (index == 0) {
+                    RealNameVC *vc = [RealNameVC new];
+                    [self.navigationController pushViewController:vc animated:YES];
+                }
+    
+            };
+            [alert show];
+            return;
+        }
+    if (self.myModel.mt4_id  == 0) {
+        MyTipAlert *alert = [[MyTipAlert alloc] initWithTipAlertWithTitle:@"账户管理提示" contentStr:@"您的尚未开通账户，请先开通账户" btnStr:@"马上开通"];
+        alert.clickBlock = ^(int index) {
+            if (index == 0) {
+                
+            }
+        };
+        [alert show];
+        return;
+    }
+    
+    
+    //出入金
+    CashInOrOutVC *vc = [[CashInOrOutVC alloc] init];
+    vc.mt4Str = [NSString stringWithFormat:@"%@",[LxUserDefaults objectForKey:Mt4_id]];
+    [self.navigationController pushViewController:vc animated:YES];
+    
+}
+
+- (void)loadDataMyModel
+{
+    
+    BADataEntity *entity = [BADataEntity new];
+    entity.urlString = [NSString stringWithFormat:@"%@%@",MainUrl,Url_MyCenter];
+    entity.needCache = YES;
+    entity.parameters = @{@"types":@"1",@"Access_Token":[LxUserDefaults objectForKey:Token]};
+    [SVProgressHUD show];
+    [BANetManager ba_request_POSTWithEntity:entity successBlock:^(id response) {
+        NSDictionary *result = response;
+        if ([result[@"code"] intValue] == 1) {
+            //成功
+            [SVProgressHUD dismiss];
+            self.myModel = [MyModel mj_objectWithKeyValues:result[@"data"]];
+            [self cashINOrOUT];
+            
+        }else{
+            
+            [SVProgressHUD showErrorWithStatus:result[@"message"]];
+        }
+        
+    } failureBlock:^(NSError *error) {
+        
+        [SVProgressHUD showErrorWithStatus:error.userInfo[@"NSDebugDescription"]];
+    } progressBlock:^(int64_t bytesProgress, int64_t totalBytesProgress) {
+        
+    }];
+    
+}
+
+- (void)downLoad
+{
+    [self loadsubData];
+}
+
+- (void)loadsubData
+{
+    
+    BADataEntity *entity = [BADataEntity new];
+    entity.urlString = [NSString stringWithFormat:@"%@%@",MainUrl,Url_userAction];
+    entity.needCache = NO;
+  entity.parameters = @{@"types":@"5",@"mt4_id":[NSString stringWithFormat:@"%@",[LxUserDefaults objectForKey:Mt4_id]]};
+    
+    [BANetManager ba_request_POSTWithEntity:entity successBlock:^(id response) {
+        NSDictionary *result = response;
+        self.model = [Mt4Balance mj_objectWithKeyValues:result];
+
+        if (self.model.ret == 0) {
+            //成功
+            self.model = [Mt4Balance mj_objectWithKeyValues:result];
+        
+            
+            self.lab1.text = [NSString stringWithFormat:@"$%@",handlerDecimalNumber(self.model.balance, NSRoundUp, 2).stringValue];
+            self.lab2.text = [NSString stringWithFormat:@"$%@",handlerDecimalNumber(self.model.equity, NSRoundUp, 2).stringValue];
+            self.lab3.text = [NSString stringWithFormat:@"$%@",handlerDecimalNumber(self.model.margin, NSRoundUp, 2).stringValue];
+            self.lab4.text =[NSString stringWithFormat:@"%@%%",handlerDecimalNumber(self.model.margin, NSRoundUp, 2).stringValue] ;
+            
+            
+            
+            
+            [self.pagerView.mainTableView.mj_header endRefreshing];
+            self.isHave = YES;
+//            [self.categoryView selectItemAtIndex:0];
+            [self.pagerView reloadData];
+            
+            
+        }else{
+            
+            [SVProgressHUD showErrorWithStatus:self.model.msg];
+            [self.pagerView.mainTableView.mj_header endRefreshing];
+            self.isHave = NO;
+            [self.pagerView reloadData];
+
+//            self.empity.tableView.ly_emptyView = self.systemExceptionView;
+//            [self.empity.tableView ly_endLoading];
+            
+        }
+        
+    } failureBlock:^(NSError *error) {
+        
+//        [self.view addSubview:self.systemExceptionView];
+
+        [self.pagerView.mainTableView.mj_header endRefreshing];
+        self.empity.tableView.ly_emptyView = self.systemExceptionView;
+        [self.empity.tableView ly_endLoading];
+        
+    } progressBlock:^(int64_t bytesProgress, int64_t totalBytesProgress) {
+        
+    }];
+    
+    
+}
+
+
+
+- (JXPagerView *)preferredPagingView {
+    return [[JXPagerView alloc] initWithDelegate:self];
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    
+    self.pagerView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight - Height_NavBar - Height_TabBar);
+}
+
+#pragma mark - JXPagerViewDelegate
+
+- (UIView *)tableHeaderViewInPagerView:(JXPagerView *)pagerView {
+    if (_isHave) {
+
+        self.headerView.height = 200;
+        self.headerView.hidden = NO;
+
+    }else{
+        self.headerView.height = 0;
+        self.headerView.hidden = YES;
+
+    }
+    
+    return self.headerView;
+
+}
+
+- (NSUInteger)tableHeaderViewHeightInPagerView:(JXPagerView *)pagerView {
+    if (_isHave) {
+        return 200;
+    }
+    return 0;
+}
+
+- (NSUInteger)heightForPinSectionHeaderInPagerView:(JXPagerView *)pagerView {
+    
+    if (_isHave) {
+        return 40;
+    }
+    return 0;
+}
+
+- (UIView *)viewForPinSectionHeaderInPagerView:(JXPagerView *)pagerView {
+    
+    if (_isHave) {
+        
+        return self.categoryView;
+        
+    }
+    return nil;
+    
+}
+
+- (NSInteger)numberOfListsInPagerView:(JXPagerView *)pagerView {
+    //和categoryView的item数量一致
+    if (_isHave) {
+        
+        return self.titles.count;
+        
+    }
+    return 1;
+    
+}
+
+
+
+- (id<JXPagerViewListViewDelegate>)pagerView:(JXPagerView *)pagerView initListAtIndex:(NSInteger)index {
+    
+    if (!_isHave) {
+        
+        return  self.empity;
+        
+    }else{
+        
+            if (index == 0) {
+                HoldPositionsVC *listVC = [[HoldPositionsVC alloc] init];
+                listVC.totalIncom = ^(double total) {
+                    self.totalLab.text = [NSString stringWithFormat:@"%.2f",total];
+                };
+                listVC.mt4Str = [NSString stringWithFormat:@"%@",[LxUserDefaults objectForKey:Mt4_id]];
+                [self addChildViewController:listVC];
+                return listVC;
+
+            }else if(index == 1){
+                
+                ListVC *listVC = [[ListVC alloc] init];
+                listVC.mt4Str = [NSString stringWithFormat:@"%@",[LxUserDefaults objectForKey:Mt4_id]];
+                [self addChildViewController:listVC];
+                return listVC;
+
+            }else{
+                
+                ClosePositionVC *listVC = [[ClosePositionVC alloc] init];
+                listVC.mt4Str = [NSString stringWithFormat:@"%@",[LxUserDefaults objectForKey:Mt4_id]];
+                [self addChildViewController:listVC];
+                return listVC;
+            }
+            
+        
+    }
+    
+    
+}
+
+
+-(void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleDefault;
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
+}
+
+
+
+
+#pragma mark - JXCategoryViewDelegate
+
+- (void)categoryView:(JXCategoryBaseView *)categoryView didSelectedItemAtIndex:(NSInteger)index {
+    self.navigationController.interactivePopGestureRecognizer.enabled = (index == 0);
+}
+
+
+
+#pragma mark - JXCategoryViewDelegate
+- (void)categoryView:(JXCategoryBaseView *)categoryView didScrollSelectedItemAtIndex:(NSInteger)index {
+    [self.listVCContainerView didScrollSelectedItemAtIndex:index];
+}
+
+- (void)categoryView:(JXCategoryBaseView *)categoryView scrollingFromLeftIndex:(NSInteger)leftIndex toRightIndex:(NSInteger)rightIndex ratio:(CGFloat)ratio {
+    [self.listVCContainerView scrollingFromLeftIndex:leftIndex toRightIndex:rightIndex ratio:ratio];
+}
+
+
+
+- (void)categoryView:(JXCategoryBaseView *)categoryView didClickedItemContentScrollViewTransitionToIndex:(NSInteger)index {
+    //请务必实现该方法
+    //因为底层触发列表加载是在代理方法：`- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath`回调里面
+    //所以，如果当前有5个item，当前在第1个，用于点击了第5个。categoryView默认是通过设置contentOffset.x滚动到指定的位置，这个时候有个问题，就会触发中间2、3、4的cellForItemAtIndexPath方法。
+    //如此一来就丧失了延迟加载的功能
+    //所以，如果你想规避这样的情况发生，那么务必按照这里的方法处理滚动。
+    [self.pagerView.listContainerView.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:index inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+    
+    //如果你想相邻的两个item切换时，通过有动画滚动实现。未相邻的两个item直接切换，可以用下面这段代码
+    /*
+     NSInteger diffIndex = labs(categoryView.selectedIndex - index);
+     if (diffIndex > 1) {
+     [self.pagerView.listContainerView.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:index inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+     }else {
+     [self.pagerView.listContainerView.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:index inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
+     }
+     */
+}
+
+
+
+@end

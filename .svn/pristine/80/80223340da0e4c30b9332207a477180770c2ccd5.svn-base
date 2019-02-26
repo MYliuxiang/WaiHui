@@ -1,0 +1,90 @@
+PODS:
+  - AFNetworking (3.2.1):
+    - AFNetworking/NSURLSession (= 3.2.1)
+    - AFNetworking/Reachability (= 3.2.1)
+    - AFNetworking/Security (= 3.2.1)
+    - AFNetworking/Serialization (= 3.2.1)
+    - AFNetworking/UIKit (= 3.2.1)
+  - AFNetworking/NSURLSession (3.2.1):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (3.2.1)
+  - AFNetworking/Security (3.2.1)
+  - AFNetworking/Serialization (3.2.1)
+  - AFNetworking/UIKit (3.2.1):
+    - AFNetworking/NSURLSession
+  - AxcAE_TabBar (1.0.5)
+  - BGFMDB (2.0.13):
+    - BGFMDB/BG (= 2.0.13)
+    - BGFMDB/FMDB (= 2.0.13)
+  - BGFMDB/BG (2.0.13):
+    - BGFMDB/FMDB
+  - BGFMDB/FMDB (2.0.13)
+  - IQKeyboardManager (6.2.0)
+  - JXCategoryView (1.1.2)
+  - Masonry (1.1.0)
+  - MBProgressHUD (1.1.0)
+  - MJExtension (3.0.15.1)
+  - MJRefresh (3.1.15.7)
+  - pop (1.0.12)
+  - SDWebImage (4.4.2):
+    - SDWebImage/Core (= 4.4.2)
+  - SDWebImage/Core (4.4.2)
+  - SVProgressHUD (2.2.5)
+  - Toast (4.0.0)
+  - WRNavigationBar (1.2.0)
+
+DEPENDENCIES:
+  - AFNetworking
+  - AxcAE_TabBar
+  - BGFMDB (~> 2.0.9)
+  - IQKeyboardManager
+  - JXCategoryView
+  - Masonry
+  - MBProgressHUD
+  - MJExtension
+  - MJRefresh
+  - pop
+  - SDWebImage
+  - SVProgressHUD
+  - Toast (~> 4.0.0)
+  - WRNavigationBar
+  - WRNavigationBar (~> 1.2.0)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - AFNetworking
+    - AxcAE_TabBar
+    - BGFMDB
+    - IQKeyboardManager
+    - JXCategoryView
+    - Masonry
+    - MBProgressHUD
+    - MJExtension
+    - MJRefresh
+    - pop
+    - SDWebImage
+    - SVProgressHUD
+    - Toast
+    - WRNavigationBar
+
+SPEC CHECKSUMS:
+  AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
+  AxcAE_TabBar: 1d5bcf6c4921889dc38839b6ba2c584a9b55251a
+  BGFMDB: 48e6823027232402a678acc7f71484b1fc9171d0
+  IQKeyboardManager: 6194101620b73af5e67900b8f89707a99de0b804
+  JXCategoryView: 7281368e4f4e10f1d006ff07114cafd63a495602
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
+  MJExtension: 19bc33ce2eee2d319760f5622562cf581a6ff756
+  MJRefresh: 697f8ec75ebdbe9207767bb682cf0f51b0d8a41f
+  pop: d582054913807fd11fd50bfe6a539d91c7e1a55a
+  SDWebImage: 624d6e296c69b244bcede364c72ae0430ac14681
+  SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
+  Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
+  WRNavigationBar: dc952230effbb646785f962587caaac06c60f229
+
+PODFILE CHECKSUM: 26aa2ec2a690866ba3b3abbbf21c3383407a9858
+
+COCOAPODS: 1.5.2

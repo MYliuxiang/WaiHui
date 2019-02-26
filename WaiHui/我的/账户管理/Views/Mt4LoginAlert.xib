@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="Mt4LoginAlert">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="197"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="真实账户：87365930" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FAa-FO-tNC">
+                    <rect key="frame" x="108" y="20" width="159" height="19.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <color key="textColor" red="0.23921568627450979" green="0.27843137254901962" blue="0.54509803921568623" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Shape" translatesAutoresizingMaskIntoConstraints="NO" id="FjP-yF-ktU">
+                    <rect key="frame" x="15" y="69.5" width="13" height="17"/>
+                </imageView>
+                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="wefwef" placeholder="请输入账户密码" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="MtB-mY-MBn" customClass="TXLimitedTextField">
+                    <rect key="frame" x="38" y="64" width="322" height="30"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="nck-kS-KV5"/>
+                    </constraints>
+                    <nil key="textColor"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
+                </textField>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ygd-UV-V9S">
+                    <rect key="frame" x="15" y="121.5" width="345" height="44"/>
+                    <color key="backgroundColor" red="0.2627450980392157" green="0.36078431372549019" blue="0.58431372549019611" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="44" id="DEb-Iv-vMn"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <state key="normal" title="登录">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </state>
+                    <connections>
+                        <action selector="loginAC:" destination="iN0-l3-epB" eventType="touchUpInside" id="yse-eQ-G9P"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="l67-aD-KSd">
+                    <rect key="frame" x="162.5" y="170.5" width="50" height="27"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <state key="normal" title="重置密码">
+                        <color key="titleColor" red="0.69019607843137254" green="0.71372549019607845" blue="0.78823529411764703" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="resetAC:" destination="iN0-l3-epB" eventType="touchUpInside" id="upN-8h-Jc5"/>
+                    </connections>
+                </button>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8Pv-Xd-TS2">
+                    <rect key="frame" x="15" y="94" width="345" height="0.5"/>
+                    <color key="backgroundColor" red="0.94901960784313721" green="0.95686274509803915" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="0.5" id="J96-JA-Wkh"/>
+                    </constraints>
+                </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="密码输入有误" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OhK-eT-tgE">
+                    <rect key="frame" x="15" y="99.5" width="61.5" height="12"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                    <color key="textColor" red="1" green="0.55686274509803924" blue="0.52941176470588236" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="MtB-mY-MBn" firstAttribute="centerY" secondItem="FjP-yF-ktU" secondAttribute="centerY" constant="1" id="2sA-ER-Ppb"/>
+                <constraint firstItem="8Pv-Xd-TS2" firstAttribute="top" secondItem="MtB-mY-MBn" secondAttribute="bottom" id="4W0-ZI-xmG"/>
+                <constraint firstItem="Ygd-UV-V9S" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="15" id="6Pt-8M-5v2"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="Ygd-UV-V9S" secondAttribute="trailing" constant="15" id="6YA-iT-ShI"/>
+                <constraint firstItem="OhK-eT-tgE" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="15" id="H8g-WV-hBF"/>
+                <constraint firstItem="OhK-eT-tgE" firstAttribute="top" secondItem="8Pv-Xd-TS2" secondAttribute="bottom" constant="5" id="JeZ-Cd-cVW"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="MtB-mY-MBn" secondAttribute="trailing" constant="15" id="OAU-Qv-BRx"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="8Pv-Xd-TS2" secondAttribute="trailing" constant="15" id="Ps6-Ob-ace"/>
+                <constraint firstItem="MtB-mY-MBn" firstAttribute="leading" secondItem="FjP-yF-ktU" secondAttribute="trailing" constant="10" id="TFw-YH-zVR"/>
+                <constraint firstItem="FjP-yF-ktU" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="15" id="TZ6-Lv-BfF"/>
+                <constraint firstItem="8Pv-Xd-TS2" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="15" id="UHW-gv-NLZ"/>
+                <constraint firstItem="FAa-FO-tNC" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="b82-IH-9nZ"/>
+                <constraint firstItem="l67-aD-KSd" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="kDF-o9-h52"/>
+                <constraint firstItem="l67-aD-KSd" firstAttribute="top" secondItem="Ygd-UV-V9S" secondAttribute="bottom" constant="5" id="kUR-5a-L2U"/>
+                <constraint firstItem="FAa-FO-tNC" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="20" id="miS-HD-ufj"/>
+                <constraint firstItem="Ygd-UV-V9S" firstAttribute="top" secondItem="OhK-eT-tgE" secondAttribute="bottom" constant="10" id="urq-82-3ZP"/>
+                <constraint firstItem="FjP-yF-ktU" firstAttribute="top" secondItem="FAa-FO-tNC" secondAttribute="bottom" constant="30" id="zap-IC-UbA"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <connections>
+                <outlet property="loginBtn" destination="Ygd-UV-V9S" id="yCD-hP-zSn"/>
+                <outlet property="pwField" destination="MtB-mY-MBn" id="sbc-So-7qc"/>
+                <outlet property="resetBtn" destination="l67-aD-KSd" id="QCh-DK-OBx"/>
+                <outlet property="tipLab" destination="OhK-eT-tgE" id="7ON-y2-DRj"/>
+                <outlet property="titleLab" destination="FAa-FO-tNC" id="Cdt-WU-t5U"/>
+            </connections>
+            <point key="canvasLocation" x="50.399999999999999" y="257.72113943028489"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="Shape" width="13" height="17"/>
+    </resources>
+</document>

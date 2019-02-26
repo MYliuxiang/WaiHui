@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CXSearchCollectionViewCell" id="HIo-AA-2W8" customClass="CXSearchCollectionViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="257" height="118"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="257" height="118"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cZT-pW-PiR">
+                        <rect key="frame" x="20" y="0.0" width="211" height="118"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                        <state key="normal">
+                            <color key="titleColor" red="0.23921568627450979" green="0.27843137254901962" blue="0.54509803921568623" alpha="1" colorSpace="calibratedRGB"/>
+                        </state>
+                        <connections>
+                            <action selector="contentAC:" destination="HIo-AA-2W8" eventType="touchUpInside" id="nt0-QH-crS"/>
+                        </connections>
+                    </button>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="05X-dA-T8W">
+                        <rect key="frame" x="231" y="51" width="16" height="16"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="16" id="2c4-cT-0HV"/>
+                            <constraint firstAttribute="width" constant="16" id="qlg-5a-Lst"/>
+                        </constraints>
+                        <state key="normal" image="qqqq"/>
+                        <connections>
+                            <action selector="select:" destination="HIo-AA-2W8" eventType="touchUpInside" id="oEx-bK-tee"/>
+                        </connections>
+                    </button>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstItem="05X-dA-T8W" firstAttribute="centerY" secondItem="HIo-AA-2W8" secondAttribute="centerY" id="6Sn-Ma-TWl"/>
+                <constraint firstAttribute="bottom" secondItem="cZT-pW-PiR" secondAttribute="bottom" id="Rue-a3-1DV"/>
+                <constraint firstItem="cZT-pW-PiR" firstAttribute="top" secondItem="HIo-AA-2W8" secondAttribute="top" id="Tpz-zZ-VDA"/>
+                <constraint firstAttribute="trailing" secondItem="05X-dA-T8W" secondAttribute="trailing" constant="10" id="ULI-M9-pkH"/>
+                <constraint firstItem="cZT-pW-PiR" firstAttribute="leading" secondItem="HIo-AA-2W8" secondAttribute="leading" constant="10" id="UV9-JW-4KA"/>
+                <constraint firstItem="05X-dA-T8W" firstAttribute="leading" secondItem="cZT-pW-PiR" secondAttribute="trailing" id="jAV-vV-55j"/>
+            </constraints>
+            <size key="customSize" width="223" height="120"/>
+            <connections>
+                <outlet property="contentButton" destination="cZT-pW-PiR" id="LLv-86-PX3"/>
+            </connections>
+            <point key="canvasLocation" x="151.19999999999999" y="394.00299850074964"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <image name="qqqq" width="32" height="32"/>
+    </resources>
+</document>

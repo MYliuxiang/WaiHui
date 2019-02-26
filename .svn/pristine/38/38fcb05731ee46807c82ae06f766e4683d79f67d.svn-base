@@ -1,0 +1,159 @@
+//
+//  SellVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/7.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "SellVC.h"
+
+@interface SellVC ()<JXCategoryViewDelegate>
+@property (nonatomic, strong) JXCategoryTitleView *categoryView;
+@property (nonatomic, strong) NSMutableArray *listVCArray;
+@property (nonatomic, strong) JXCategoryListVCContainerView *listVCContainerView;
+@property (strong, nonatomic) IBOutlet NavTitleView *myTitle;
+
+
+@end
+
+@implementation SellVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    NSLog(@"%f",[WRNavigationBar navBarBottom]);
+    
+    self.navigationItem.titleView = self.myTitle;
+    self.myTitle.intrinsicContentSize = CGSizeMake(200, 40);
+
+
+    CGFloat naviHeight = [UIApplication.sharedApplication.keyWindow jx_navigationHeight];
+    [self wr_setNavBarShadowImageHidden:YES];
+    
+    NSArray *titles = @[@"市价",@"限价"];
+    NSUInteger count = titles.count;
+    CGFloat categoryViewHeight = 40;
+    CGFloat width = kScreenWidth;
+    CGFloat height = kScreenHeight - naviHeight - categoryViewHeight;
+    
+    self.listVCArray = [NSMutableArray array];
+    
+    for (int i = 0; i < count; i ++) {
+        
+        if (i== 0) {
+            MarketpriceVC *listVC = [[MarketpriceVC alloc] init];
+            
+            listVC.view.frame = CGRectMake(i*width, 0, width, height);
+            
+            [self.listVCArray addObject:listVC];
+            [self addChildViewController:listVC];
+        }else{
+            
+            CheckpriceVC *listVC = [[CheckpriceVC alloc] init];
+            listVC.view.frame = CGRectMake(i*width, 0, width, height);
+            [self.listVCArray addObject:listVC];
+            [self addChildViewController:listVC];
+        }
+       
+        
+    }
+    
+    self.categoryView = [[JXCategoryTitleView alloc] init];
+    self.categoryView.frame = CGRectMake(0, 0, kScreenWidth, categoryViewHeight);
+    self.categoryView.delegate = self;
+    self.categoryView.titles = titles;
+    self.categoryView.titleColor = [MyColor colorWithHexString:@"#858296"];
+    self.categoryView.titleSelectedColor = [MyColor colorWithHexString:@"#2B2B76"];
+    self.categoryView.titleFont = [UIFont systemFontOfSize:14];
+    JXCategoryIndicatorLineView *lineView = [[JXCategoryIndicatorLineView alloc] init];
+    lineView.indicatorLineViewColor = [MyColor colorWithHexString:@"#2B2B76"];
+    lineView.lineStyle = JXCategoryIndicatorLineStyle_Normal;
+    lineView.indicatorLineViewCornerRadius = 0;
+    lineView.lineScrollOffsetX = 0;
+    self.categoryView.indicators = @[lineView];
+    [self.view addSubview:self.categoryView];
+    
+    self.listVCContainerView = [[JXCategoryListVCContainerView alloc] initWithFrame:CGRectMake(0, categoryViewHeight, width, kScreenHeight - Height_NavBar - categoryViewHeight - Height_TabBar)];
+    self.listVCContainerView.defaultSelectedIndex = 0;
+    self.categoryView.defaultSelectedIndex = 0;
+    self.listVCContainerView.listVCArray = self.listVCArray;
+    [self.view addSubview:self.listVCContainerView];
+    
+    self.categoryView.contentScrollView = self.listVCContainerView.scrollView;
+    
+    
+    
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap)];
+    [self.myTitle addGestureRecognizer:tap];
+    
+}
+
+- (void)tap
+{
+    
+    SeletedAlert *alert = [[SeletedAlert alloc] initSeletedAlert];
+    [alert show];
+}
+
+//这句代码必须加上
+- (BOOL)shouldAutomaticallyForwardAppearanceMethods {
+    return NO;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [self.listVCContainerView parentVCWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    self.navigationController.interactivePopGestureRecognizer.enabled = (self.categoryView.selectedIndex == 0);
+    
+    [self.listVCContainerView parentVCDidAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    [self.listVCContainerView parentVCWillDisappear:animated];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
+    [self.listVCContainerView parentVCDidDisappear:animated];
+}
+
+
+#pragma mark - JXCategoryViewDelegate
+
+- (void)categoryView:(JXCategoryBaseView *)categoryView didSelectedItemAtIndex:(NSInteger)index {
+    //侧滑手势处理
+    self.navigationController.interactivePopGestureRecognizer.enabled = (index == 0);
+    //    [self.listVCArray[index] loadDataForFirst];
+}
+
+- (void)categoryView:(JXCategoryBaseView *)categoryView didClickSelectedItemAtIndex:(NSInteger)index {
+    [self.listVCContainerView didClickSelectedItemAtIndex:index];
+}
+
+- (void)categoryView:(JXCategoryBaseView *)categoryView didScrollSelectedItemAtIndex:(NSInteger)index {
+    [self.listVCContainerView didScrollSelectedItemAtIndex:index];
+}
+
+- (void)categoryView:(JXCategoryBaseView *)categoryView scrollingFromLeftIndex:(NSInteger)leftIndex toRightIndex:(NSInteger)rightIndex ratio:(CGFloat)ratio {
+    [self.listVCContainerView scrollingFromLeftIndex:leftIndex toRightIndex:rightIndex ratio:ratio];
+}
+
+- (IBAction)titleAC:(id)sender {
+    
+    SeletedAlert *alert = [[SeletedAlert alloc] initSeletedAlert];
+    [alert show];
+    
+}
+
+
+@end

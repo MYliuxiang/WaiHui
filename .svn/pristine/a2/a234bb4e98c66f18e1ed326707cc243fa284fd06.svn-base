@@ -1,0 +1,135 @@
+//
+//  ResetPWStartVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/14.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "ResetPWStartVC.h"
+
+@interface ResetPWStartVC ()
+@property (strong, nonatomic) IBOutlet UIView *footerView;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (nonatomic,strong) NSArray *dataList;
+
+@end
+
+@implementation ResetPWStartVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.title = @"重置密码";
+    self.dataList = @[@"MT4账号",@"新密码",@"确认新密码",@"手机号",@"验证码"];
+    self.footerView.height = 124;
+    self.tableView.tableFooterView = self.footerView;
+    
+}
+
+#pragma  mark --------UITableView Delegete----------
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.dataList.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row ==4) {
+        
+        static NSString *identifire = @"cellIDstart";
+        StartPwCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+        if (cell == nil) {
+            cell = [[NSBundle mainBundle] loadNibNamed:@"StartPwCell" owner:nil options:nil].lastObject;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+        }
+        
+        cell.nameLab.text = self.dataList[indexPath.row];
+        cell.textField.placeholder = @"输入手机号码";
+        return cell;
+
+    }else{
+        
+        static NSString *identifire = @"cellID";
+
+        ResetCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+        if (cell == nil) {
+            cell = [[NSBundle mainBundle] loadNibNamed:@"ResetCell" owner:nil options:nil].lastObject;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+        }
+        if (indexPath.row == 0) {
+            cell.textField.text = @"394506008";
+            cell.textField.placeholder = @"";
+            cell.textField.userInteractionEnabled = NO;
+            
+        }else if (indexPath.row == 1){
+            cell.textField.text = @"";
+            cell.textField.placeholder = @"输入新密码";
+            cell.textField.userInteractionEnabled = YES;
+
+        }else if (indexPath.row == 2){
+            cell.textField.text = @"";
+            cell.textField.placeholder = @"再次输入新密码";
+            cell.textField.userInteractionEnabled = YES;
+            
+        }else{
+            cell.textField.text = @"13509898856";
+            cell.textField.placeholder = @"";
+
+            cell.textField.userInteractionEnabled = NO;
+
+            
+        }
+        
+        cell.titleLab.text = self.dataList[indexPath.row];
+        return cell;
+    }
+   
+    
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 48;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    
+    return 10;
+    
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 10)];
+    view.backgroundColor = [MyColor colorWithHexString:@"#F7F9FE"];
+    return view;
+}
+
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.1;
+    
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    
+    
+}
+
+
+@end

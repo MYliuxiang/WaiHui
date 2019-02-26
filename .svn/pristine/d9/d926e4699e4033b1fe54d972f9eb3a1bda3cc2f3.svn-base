@@ -1,0 +1,125 @@
+//
+//  CheckpriceVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/7.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "CheckpriceVC.h"
+
+@interface CheckpriceVC ()
+@property (strong, nonatomic) IBOutlet UIView *headerView;
+@property (strong, nonatomic) IBOutlet UIView *footView;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+
+@end
+
+@implementation CheckpriceVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.headerView.height = 44 + 68;
+    self.footView.height = 130;
+    self.tableView.tableHeaderView = self.headerView;
+    self.tableView.tableFooterView = self.footView;
+}
+#pragma  mark --------UITableView Delegete----------
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 6;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == 1) {
+        static NSString *identifire = @"cellIDOne";
+        PriceOneCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+        if (cell == nil) {
+            cell = [[[NSBundle mainBundle] loadNibNamed:@"PriceOneCell" owner:nil options:nil] lastObject];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+        }
+        
+        return cell;
+    }else if (indexPath.row == 2 || indexPath.row == 3){
+        static NSString *identifire = @"cellIDTwo";
+        PriceTwoCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+        if (cell == nil) {
+            cell = [[[NSBundle mainBundle] loadNibNamed:@"PriceTwoCell" owner:nil options:nil] lastObject];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+        }
+        
+        return cell;
+        
+    }else{
+        
+        static NSString *identifire = @"cellID";
+        PriceCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+        if (cell == nil) {
+            cell = [[[NSBundle mainBundle] loadNibNamed:@"PriceCell" owner:nil options:nil] lastObject];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+        }
+        
+        return cell;
+    }
+   
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if(indexPath.row == 1){
+        return 80;
+    }
+    return 44;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    
+    return 0.1;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.1;
+    
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == 2) {
+        OffsetAlert *alert = [[OffsetAlert alloc] initOffsetAlert];
+        [alert show];
+    }else if (indexPath.row == 3){
+        
+        TermofvalidityAlert *alert = [[TermofvalidityAlert alloc] initTermofvalidityAlert];
+        [alert show];
+        
+    }
+    
+    
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

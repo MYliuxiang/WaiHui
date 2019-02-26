@@ -1,0 +1,139 @@
+//
+//  AccountManagerVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/14.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "AccountManagerVC.h"
+
+@interface AccountManagerVC ()
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+
+@end
+
+@implementation AccountManagerVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.title = @"账户管理";
+    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 84, 0);
+}
+
+#pragma  mark --------UITableView Delegete----------
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 4;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == 0) {
+        static NSString *identifire = @"cellIDone";
+        OpenSimulationCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+        if (cell == nil) {
+            cell = [[[NSBundle mainBundle] loadNibNamed:@"OpenSimulationCell" owner:nil options:nil] lastObject];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+        }
+        
+        return cell;
+    }else if (indexPath.row == 1){
+        static NSString *identifire = @"cellIDtwo";
+        OpenAccountCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+        if (cell == nil) {
+            cell = [[[NSBundle mainBundle] loadNibNamed:@"OpenAccountCell" owner:nil options:nil] lastObject];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+        }
+        
+        return cell;
+    }else if(indexPath.row == 2){
+        static NSString *identifire = @"cellIDthree";
+        SimulationCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+        if (cell == nil) {
+            cell = [[[NSBundle mainBundle] loadNibNamed:@"SimulationCell" owner:nil options:nil] lastObject];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+        }
+        cell.moreBlock = ^{
+            AccountMoreVC *vc = [[AccountMoreVC alloc] init];
+            [self.navigationController pushViewController:vc animated:YES];
+            
+        };
+        
+        
+        return cell;
+        
+    }else{
+        
+        static NSString *identifire = @"cellIDfour";
+        AccountCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+        if (cell == nil) {
+            cell = [[[NSBundle mainBundle] loadNibNamed:@"AccountCell" owner:nil options:nil] lastObject];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+        }
+        
+        cell.moreBlock = ^{
+            AccountMoreVC *vc = [[AccountMoreVC alloc] init];
+            [self.navigationController pushViewController:vc animated:YES];
+        
+    };
+            
+    
+        return cell;
+    }
+    
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 148;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    
+    return 0.1;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.1;
+    
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    
+    
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+- (IBAction)addMt4AC:(id)sender {
+    
+    AddMt4VC *vc = [AddMt4VC new];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+@end

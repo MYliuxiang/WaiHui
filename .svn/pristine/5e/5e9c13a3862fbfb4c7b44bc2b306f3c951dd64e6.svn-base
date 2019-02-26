@@ -1,0 +1,195 @@
+//
+//  ListCell.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/11.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "ListCell.h"
+
+@implementation ListCell
+
+- (void)awakeFromNib {
+    [super awakeFromNib];
+    // Initialization code
+    self.hqBtn.layer.borderColor = [MyColor colorWithHexString:@"#DEDEEB"].CGColor;
+    self.hqBtn.layer.borderWidth = 0.5;
+    
+    self.gdBtn.layer.borderColor = [MyColor colorWithHexString:@"#DEDEEB"].CGColor;
+    self.gdBtn.layer.borderWidth = 0.5;
+    
+    self.csBtn.layer.borderColor = [MyColor colorWithHexString:@"#DEDEEB"].CGColor;
+    self.csBtn.layer.borderWidth = 0.5;
+    
+    self.voloumBtn.layer.masksToBounds = YES;
+    self.voloumBtn.layer.cornerRadius = 3;
+    
+    [self xw_addNotificationForName:ProductAlwaysNotice block:^(NSNotification * _Nonnull notification) {
+        
+        SocketModel *model = notification.userInfo[@"model"];
+        
+        if ([model.symbol isEqualToString:self.model.symbol]) {
+            self.model.ask = [HandleTool changeFloatWithFloat:model.ask] ;
+            self.model.ask_state = [HandleTool changeFloatWithFloat:model.ask_state];
+            self.model.bid = [HandleTool changeFloatWithFloat:model.bid];
+            self.model.bid_state = [HandleTool changeFloatWithFloat:model.bid_state];
+            self.model.digits = [HandleTool changeFloatWithFloat:model.digits];
+            self.model = self.model;
+            [self isRefresh];
+        }
+        
+    }];
+}
+
+- (void)isRefresh
+{
+    
+    if ([self.model.command rangeOfString:@"Buy"].location != NSNotFound){
+        if ([self.model.command rangeOfString:@"Limit"].location != NSNotFound) {
+            
+            if (SNCompare(self.model.bid, self.model.open_price) == 0 || SNCompare(self.model.bid, self.model.open_price) == -1) {
+                if (self.reloadBlock) {
+                    self.reloadBlock();
+                }
+            }
+        }else{
+            if (SNCompare(self.model.bid, self.model.open_price) == 0 || SNCompare(self.model.bid, self.model.open_price) == 1) {
+                if (self.reloadBlock) {
+                    self.reloadBlock();
+                }
+            }
+        }
+    }else{
+        if ([self.model.command rangeOfString:@"Limit"].location != NSNotFound) {
+            
+            if (SNCompare(self.model.bid, self.model.open_price) == 0 || SNCompare(self.model.bid, self.model.open_price) == 1) {
+                if (self.reloadBlock) {
+                    self.reloadBlock();
+                }
+            }
+        }else{
+            if (SNCompare(self.model.bid, self.model.open_price) == 0 || SNCompare(self.model.bid, self.model.open_price) == -1) {
+                if (self.reloadBlock) {
+                    self.reloadBlock();
+                }
+            }
+        }
+    }
+    
+}
+
+- (void)setModel:(ListModel *)model
+{
+    _model = model;
+    if (_model.isOpen) {
+        //打开
+        self.backgroundColor = [MyColor colorWithHexString:@"#F4F6FB"];
+        _btnView.sd_layout.heightIs(40);
+        [self setupAutoHeightWithBottomViewsArray:@[_btnView] bottomMargin:15];
+        
+    }else{
+        //关闭
+        _btnView.clipsToBounds = YES;
+        _btnView.sd_layout.heightIs(0);
+        self.backgroundColor = [UIColor whiteColor];
+        [self setupAutoHeightWithBottomViewsArray:@[_zyLab] bottomMargin:15];
+        
+    }
+    
+    _sybolLab.text = model.symbol;
+    _sybolNameLab.text = model.symbolName;
+    NSString *vo = SNDiv(model.volume, @"100").stringValue;
+
+    if([_model.command rangeOfString:@"Sell"].location != NSNotFound){
+        [self.voloumBtn setTitle:[NSString stringWithFormat:@"卖出%@手",vo] forState:UIControlStateNormal];
+        self.voloumBtn.backgroundColor = [MyColor colorWithHexString:@"#3ACCB2"];
+        self.priceLab2.text = _model.ask;
+        if (model.ask_state == 2) {
+            self.priceLab2.textColor = Color_Red;
+            
+        }else if(model.ask_state == 1){
+            self.priceLab2.textColor = Color_Green;
+            
+        }else{
+            self.priceLab2.textColor = Color_Gray;
+
+        }
+    }else{
+        [self.voloumBtn setTitle:[NSString stringWithFormat:@"买入%@手",vo] forState:UIControlStateNormal];
+        self.voloumBtn.backgroundColor = [MyColor colorWithHexString:@"#FF8E87"];
+        self.priceLab2.text = _model.bid;
+        if (model.bid_state == 2) {
+            self.priceLab2.textColor = Color_Red;
+            
+        }else if(model.bid_state == 1){
+            self.priceLab2.textColor = Color_Green;
+        }else{
+            self.priceLab2.textColor = Color_Gray;
+        }
+        
+    }
+    
+    if([_model.sl doubleValue] == 0){
+        self.slLab.text = [NSString stringWithFormat:@"止损：未设置"];
+        
+    }else{
+        
+        self.slLab.text = [NSString stringWithFormat:@"止损：%@",_model.sl];
+        
+    }
+    
+    if([_model.tp doubleValue] == 0){
+        self.zyLab.text = [NSString stringWithFormat:@"止盈：未设置"];
+        
+    }else{
+        
+        self.zyLab.text = [NSString stringWithFormat:@"止盈：%@",_model.tp];
+        
+    }
+    self.slLab.text = [NSString stringWithFormat:@"止损：%@",_model.sl];
+    self.zyLab.text = [NSString stringWithFormat:@"止盈：%@",_model.tp];
+    
+     self.timeLab.text = _model.open_time;
+    self.priceLab1.text = model.open_price;
+    
+    if([_model.command rangeOfString:@"Limit"].location != NSNotFound){
+        
+        self.priceLab3.text = @"限价挂单";
+
+    }else{
+        
+        self.priceLab3.text = @"停损挂单";
+
+    }
+    
+}
+
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+
+    // Configure the view for the selected state
+}
+
+- (IBAction)hqAC:(id)sender {
+    
+    if (self.hqBlock) {
+        self.hqBlock(self.model);
+    }
+}
+- (IBAction)gdAC:(id)sender {
+    
+    if (self.gdBlock) {
+        self.gdBlock(self.model);
+    }
+}
+
+- (IBAction)cdAC:(id)sender {
+    
+    if (self.csBlock) {
+        self.csBlock(self.model);
+    }
+}
+
+@end

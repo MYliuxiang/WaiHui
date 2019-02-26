@@ -1,0 +1,156 @@
+//
+//  SetLossVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/13.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "SetLossVC.h"
+
+@interface SetLossVC ()
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (strong, nonatomic) IBOutlet UIView *footer;
+
+@end
+
+@implementation SetLossVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.title = @"设置止损止盈";
+    [self wr_setNavBarShadowImageHidden:YES];
+    self.footer.height = 124;
+    self.tableView.tableFooterView = self.footer;
+}
+
+#pragma  mark --------UITableView Delegete----------
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 5;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == 3 || indexPath.row == 2) {
+        
+        
+        static NSString *identifire = @"cellIDOne";
+        PriceCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+        if (cell == nil) {
+            cell = [[[NSBundle mainBundle] loadNibNamed:@"PriceCell" owner:nil options:nil] lastObject];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+        }
+        
+        return cell;
+    }else{
+        
+        static NSString *identifire = @"cellID";
+        ValueOneCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+        if (cell == nil) {
+            cell = [[[NSBundle mainBundle] loadNibNamed:@"ValueOneCell" owner:nil options:nil] lastObject];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+        }
+        
+        return cell;
+        
+    }
+    
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    return 48;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    
+    return 32;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.1;
+    
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 32)];
+    view.backgroundColor = [MyColor colorWithHexString:@"#FAFBFE"];
+    
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(15, 0,30, 32)];
+    label.text = @"欧元美元";
+    label.font = [UIFont systemFontOfSize:12];
+    label.textColor = [MyColor colorWithHexString:@"#2B2B76"];
+    [view addSubview:label];
+    [label sizeToFit];
+    label.centerY = view.centerY;
+    
+    UILabel *label1 = [[UILabel alloc] initWithFrame:CGRectMake(label.right + 5, 0,30, 32)];
+    label1.text = @"欧元美元";
+    label1.font = [UIFont systemFontOfSize:10];
+    label1.textColor = [MyColor colorWithHexString:@"#9EA3C6"];
+    [view addSubview:label1];
+    [label1 sizeToFit];
+    label1.centerY = view.centerY;
+    
+    return view;
+    
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    
+    
+}
+- (IBAction)doneAC:(id)sender {
+    
+    SuccessOrderVC *vc = [[SuccessOrderVC alloc] init];
+    vc.successType = SuccessTypeLoss;
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

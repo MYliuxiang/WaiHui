@@ -7,6 +7,8 @@
 //
 
 #import "AppDelegate.h"
+#import "MainTabBarController.h"
+#import "ZYNetworkAccessibity.h"
 
 @interface AppDelegate ()
 
@@ -16,7 +18,43 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+    
+   
+
+    
+    
     // Override point for customization after application launch.
+    
+//    [ZYNetworkAccessibity setAlertEnable:YES];
+//    [ZYNetworkAccessibity setStateDidUpdateNotifier:^(ZYNetworkAccessibleState state) {
+//        NSLog(@"setStateDidUpdateNotifier > %zd", state);
+//    }];
+//    [ZYNetworkAccessibity start];
+    CSToastStyle *style = [[CSToastStyle alloc] initWithDefaultStyle];
+    style.titleFont = [UIFont systemFontOfSize:14];
+    style.imageSize = CGSizeMake(20, 20);
+    style.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.5];
+    [CSToastManager setSharedStyle:style];
+//    NSDecimalNumber *num1 = [nde]
+    
+    [SVProgressHUD setMaximumDismissTimeInterval:1];
+    [SVProgressHUD setDefaultStyle:SVProgressHUDStyleDark];
+
+    [UIApplication sharedApplication].statusBarStyle =  UIStatusBarStyleDefault;
+    
+    [[SocketHandler shareInstance] connectServer];
+    
+    //键盘处理
+    IQKeyboardManager * manager = [IQKeyboardManager sharedManager];
+    manager.enable = YES;
+    manager.shouldResignOnTouchOutside = YES;
+    manager.shouldToolbarUsesTextFieldTintColor = YES;
+    manager.enableAutoToolbar = NO;
+    
+    self.window.rootViewController = [[MainTabBarController alloc] init];
+    
+    
     return YES;
 }
 

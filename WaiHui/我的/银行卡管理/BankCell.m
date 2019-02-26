@@ -1,0 +1,52 @@
+//
+//  BankCell.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/17.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "BankCell.h"
+
+@implementation BankCell
+
+- (void)awakeFromNib {
+    [super awakeFromNib];
+    // Initialization code
+}
+
+- (void)setModel:(BankModel *)model
+{
+    _model = model;
+    self.nameLab.text = model.bank_name;
+    [self.bankImg sd_setImageWithURL:[NSURL URLWithString:model.bank_img] placeholderImage:[UIImage imageNamed:@"card"]];
+#warning
+//    self.numeberLab.text = [model.bank_number stringByReplacingCharactersInRange:NSMakeRange(3, model.bank_number.length - 8) withString:@"********"];
+    self.numeberLab.text = model.bank_number;
+    if (self.model.auth_status == 0) {
+        self.statusLab.text = @"审核中";
+        self.accessoryType = UITableViewCellAccessoryNone;
+        self.constaint.constant = 18;
+    }else if (self.model.auth_status == 2){
+        self.statusLab.text = @"审核未通过，请重新提交";
+        self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        self.constaint.constant = 0;
+
+    }else{
+        
+        self.statusLab.text = @"";
+        self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        self.constaint.constant = 0;
+
+    }
+    
+    
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+
+    // Configure the view for the selected state
+}
+
+@end

@@ -1,0 +1,64 @@
+//
+//  MyTipAlert.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/26.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "MyTipAlert.h"
+
+@implementation MyTipAlert
+
+- (instancetype)initWithTipAlertWithTitle:(NSString *)title
+                               contentStr:(NSString *)contentStr
+                                   btnStr:(NSString *)btnStr
+{
+    self = [super init];
+    if (self) {
+        
+        self.type = LxCustomAlertTypeAlert;
+        self.maskView.alpha = 1;
+        self.titleLab.text = title;
+        self.width = kScreenWidth - 30;
+        self.contentLab.text = contentStr;
+        [self.doneBtn setTitle:btnStr forState:UIControlStateNormal];
+        [self setupAutoHeightWithBottomView:self.doneBtn bottomMargin:27];
+
+        
+    }
+    return self;
+    
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    [self hyb_addCornerRadius:5 size:CGSizeMake(kScreenWidth - 30, self.height_sd)];
+    
+}
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    [self.doneBtn hyb_addCornerRadius:5 size:CGSizeMake(194, 40)];
+    
+}
+
+- (IBAction)btn1AC:(id)sender {
+    if (self.clickBlock) {
+        self.clickBlock(0);
+    }
+    [self disMiss];
+}
+
+- (void)disMiss
+{
+    [super disMiss];
+    if (self.clickBlock) {
+        self.clickBlock(1);
+    }
+}
+
+
+@end

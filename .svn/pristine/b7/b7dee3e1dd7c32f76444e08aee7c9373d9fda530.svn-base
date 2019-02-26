@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="MoreAlert">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="145"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xUM-9s-f1S">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="48"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="48" id="ItH-lE-vkT"/>
+                    </constraints>
+                    <state key="normal" title="杠杆调整">
+                        <color key="titleColor" red="0.23921568630000001" green="0.2784313725" blue="0.5450980392" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="acone:" destination="iN0-l3-epB" eventType="touchUpInside" id="eMY-j1-EdS"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bQg-dp-7Vs">
+                    <rect key="frame" x="0.0" y="48.5" width="375" height="48"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="48" id="rSY-Kj-ffK"/>
+                    </constraints>
+                    <state key="normal" title="重置密码">
+                        <color key="titleColor" red="0.23921568630000001" green="0.2784313725" blue="0.5450980392" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="actwo:" destination="iN0-l3-epB" eventType="touchUpInside" id="lHY-Xl-aZp"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t2D-h0-i14">
+                    <rect key="frame" x="0.0" y="97" width="375" height="48"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="48" id="0bP-cC-Fi5"/>
+                    </constraints>
+                    <state key="normal" title="出入金">
+                        <color key="titleColor" red="0.23921568630000001" green="0.2784313725" blue="0.5450980392" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="acThree:" destination="iN0-l3-epB" eventType="touchUpInside" id="OMO-ub-BRV"/>
+                    </connections>
+                </button>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RHP-my-gFq">
+                    <rect key="frame" x="0.0" y="96.5" width="375" height="0.5"/>
+                    <color key="backgroundColor" red="0.94509803920000002" green="0.94509803920000002" blue="0.97254901959999995" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="0.5" id="vxd-pM-NIY"/>
+                    </constraints>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fkY-ys-GpL">
+                    <rect key="frame" x="0.0" y="48" width="375" height="0.5"/>
+                    <color key="backgroundColor" red="0.94509803920000002" green="0.94509803920000002" blue="0.97254901959999995" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="0.5" id="FoY-A6-Ov4"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="t2D-h0-i14" firstAttribute="top" secondItem="RHP-my-gFq" secondAttribute="bottom" id="0OU-Qq-Ydt"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="fkY-ys-GpL" secondAttribute="trailing" id="3GP-iB-9OM"/>
+                <constraint firstItem="fkY-ys-GpL" firstAttribute="top" secondItem="xUM-9s-f1S" secondAttribute="bottom" id="CZk-7x-UNm"/>
+                <constraint firstItem="bQg-dp-7Vs" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="EuR-1A-tvO"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="bQg-dp-7Vs" secondAttribute="trailing" id="L8R-J2-sJn"/>
+                <constraint firstItem="RHP-my-gFq" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="MSZ-pQ-Ee1"/>
+                <constraint firstItem="t2D-h0-i14" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="RXH-cf-sNr"/>
+                <constraint firstItem="xUM-9s-f1S" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="cs8-TP-t2d"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="t2D-h0-i14" secondAttribute="trailing" id="eLV-rY-qv7"/>
+                <constraint firstItem="bQg-dp-7Vs" firstAttribute="top" secondItem="fkY-ys-GpL" secondAttribute="bottom" id="g6H-Q3-bXd"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="xUM-9s-f1S" secondAttribute="trailing" id="g8W-XQ-JTp"/>
+                <constraint firstItem="fkY-ys-GpL" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="qz6-cQ-6xo"/>
+                <constraint firstItem="xUM-9s-f1S" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="wfy-w3-Lzy"/>
+                <constraint firstItem="RHP-my-gFq" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" id="xTb-yS-KZW"/>
+                <constraint firstItem="RHP-my-gFq" firstAttribute="top" secondItem="bQg-dp-7Vs" secondAttribute="bottom" id="zA7-vu-yqC"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <connections>
+                <outlet property="btn3" destination="t2D-h0-i14" id="RGG-Ty-YVm"/>
+            </connections>
+            <point key="canvasLocation" x="130.40000000000001" y="312.59370314842579"/>
+        </view>
+    </objects>
+</document>

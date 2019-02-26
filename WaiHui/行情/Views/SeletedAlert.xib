@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="SeletedAlert">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="276"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <searchBar contentMode="redraw" text="" placeholder="输入关键字" translatesAutoresizingMaskIntoConstraints="NO" id="Swr-bF-bzI">
+                    <rect key="frame" x="12" y="15" width="351" height="36"/>
+                    <color key="backgroundColor" red="0.95686274509803915" green="0.96470588235294119" blue="0.98431372549019602" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="36" id="aAC-Xn-RjT"/>
+                    </constraints>
+                    <textInputTraits key="textInputTraits"/>
+                </searchBar>
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="7No-D5-NH5">
+                    <rect key="frame" x="12" y="66" width="351" height="210"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="210" id="Z3V-Fa-iwc"/>
+                    </constraints>
+                    <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="ZXw-1I-bg4">
+                        <size key="itemSize" width="50" height="50"/>
+                        <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                        <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    </collectionViewFlowLayout>
+                </collectionView>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="7No-D5-NH5" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" constant="-12" id="Dri-2v-Who"/>
+                <constraint firstItem="7No-D5-NH5" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="12" id="O88-BB-FHT"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="Swr-bF-bzI" secondAttribute="trailing" constant="12" id="Xcp-d9-eQy"/>
+                <constraint firstItem="Swr-bF-bzI" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="15" id="bkc-Ij-X5o"/>
+                <constraint firstItem="Swr-bF-bzI" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="12" id="l5s-A9-PT9"/>
+                <constraint firstItem="7No-D5-NH5" firstAttribute="top" secondItem="Swr-bF-bzI" secondAttribute="bottom" constant="15" id="oY4-fu-L8W"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <connections>
+                <outlet property="collectionView" destination="7No-D5-NH5" id="DbQ-ox-34V"/>
+                <outlet property="layout" destination="ZXw-1I-bg4" id="k1V-ez-c7C"/>
+                <outlet property="searbar" destination="Swr-bF-bzI" id="cFt-Yr-poi"/>
+            </connections>
+            <point key="canvasLocation" x="130.40000000000001" y="314.84257871064472"/>
+        </view>
+    </objects>
+</document>

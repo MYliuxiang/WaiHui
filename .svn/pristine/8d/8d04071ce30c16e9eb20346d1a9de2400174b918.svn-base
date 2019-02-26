@@ -1,0 +1,122 @@
+//
+//  CashInOrOutVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/14.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "CashInOrOutVC.h"
+
+@interface CashInOrOutVC ()<JXCategoryViewDelegate,JXCategoryListContainerViewDelegate>
+@property (nonatomic, strong) JXCategoryTitleView *categoryView;
+@property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, strong) NSMutableArray *listVCArray;
+@property (nonatomic, strong) JXCategoryListContainerView *listVCContainerView;
+@property (nonatomic, strong) NSArray *titles;
+
+@end
+
+@implementation CashInOrOutVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.title = @"出/入金";
+    [self wr_setNavBarShadowImageHidden:YES];
+    self.titles = @[@"入金",@"出金",@"交易记录"];
+    NSUInteger count = self.titles.count;
+    CGFloat categoryViewHeight = 40;
+    CGFloat width = kScreenWidth;
+    CGFloat height = kScreenHeight - 28 - categoryViewHeight;
+    
+    self.listVCArray = [NSMutableArray array];
+    
+   
+    
+    self.categoryView = [[JXCategoryTitleView alloc] init];
+    self.categoryView.frame = CGRectMake(0, 0, kScreenWidth, categoryViewHeight);
+    self.categoryView.delegate = self;
+    self.categoryView.cellWidth = kScreenWidth / 3;
+    self.categoryView.contentEdgeInsetLeft = 0;
+    self.categoryView.cellSpacing = 0;
+    self.categoryView.contentEdgeInsetRight = 0;
+    self.categoryView.titles = self.titles;
+    self.categoryView.titleColor = [MyColor colorWithHexString:@"#858296"];
+    self.categoryView.titleSelectedColor = [MyColor colorWithHexString:@"#2B2B76"];
+    self.categoryView.titleFont = [UIFont systemFontOfSize:14];
+    self.categoryView.backgroundColor = [MyColor colorWithHexString:@"#F7F9FE"];
+    self.categoryView.defaultSelectedIndex = 0;
+
+    JXCategoryIndicatorLineView *lineView = [[JXCategoryIndicatorLineView alloc] init];
+    lineView.indicatorLineViewColor = [MyColor colorWithHexString:@"#2B2B76"];
+    lineView.lineStyle = JXCategoryIndicatorLineStyle_Normal;
+    lineView.indicatorLineViewCornerRadius = 0;
+    lineView.lineScrollOffsetX = 5;
+    self.categoryView.indicators = @[lineView];
+    [self.view addSubview:self.categoryView];
+    
+    self.listVCContainerView = [[JXCategoryListContainerView alloc] initWithParentVC:self delegate:self];
+    self.listVCContainerView.frame = CGRectMake(0, categoryViewHeight, width, kScreenHeight - Height_NavBar - categoryViewHeight);
+    self.listVCContainerView.defaultSelectedIndex = 0;
+    [self.view addSubview:self.listVCContainerView];
+    
+    self.categoryView.contentScrollView = self.listVCContainerView.scrollView;
+    
+    
+    
+}
+
+#pragma mark - JXCategoryViewDelegate
+- (void)categoryView:(JXCategoryBaseView *)categoryView didClickSelectedItemAtIndex:(NSInteger)index {
+    [self.listVCContainerView didClickSelectedItemAtIndex:index];
+}
+
+- (void)categoryView:(JXCategoryBaseView *)categoryView scrollingFromLeftIndex:(NSInteger)leftIndex toRightIndex:(NSInteger)rightIndex ratio:(CGFloat)ratio {
+    [self.listVCContainerView scrollingFromLeftIndex:leftIndex toRightIndex:rightIndex ratio:ratio selectedIndex:categoryView.selectedIndex];
+}
+
+#pragma mark - JXCategoryListContainerViewDelegate
+
+- (id<JXCategoryListContentViewDelegate>)listContainerView:(JXCategoryListContainerView *)listContainerView initListForIndex:(NSInteger)index {
+    
+    CGFloat categoryViewHeight = 40;
+    CGFloat naviHeight = [UIApplication.sharedApplication.keyWindow jx_navigationHeight];
+    CGFloat width = kScreenWidth;
+    CGFloat height = kScreenHeight - naviHeight - categoryViewHeight;
+    
+    if (index == 0) {
+        CashInVC *listVC = [[CashInVC alloc] init];
+        listVC.mt4Str = self.mt4Str;
+        listVC.view.frame = CGRectMake(index*width, 0, width, height);
+        [self addChildViewController:listVC];
+        return listVC;
+
+    }else if (index == 1){
+        
+        CashOutVC *listVC = [[CashOutVC alloc] init];
+        listVC.mt4Str = self.mt4Str;
+
+        listVC.view.frame = CGRectMake(index*width, 0, width, height);
+        [self addChildViewController:listVC];
+        return listVC;
+
+    }else{
+        
+        CashListVC *listVC = [[CashListVC alloc] init];
+        listVC.view.frame = CGRectMake(index*width, 0, width, height);
+        listVC.mt4Str = self.mt4Str;
+        [self addChildViewController:listVC];
+        return listVC;
+
+    }
+  
+    //    listVC.naviController = self.navigationController;
+    
+}
+
+- (NSInteger)numberOfListsInlistContainerView:(JXCategoryListContainerView *)listContainerView {
+    return self.titles.count;
+}
+
+@end

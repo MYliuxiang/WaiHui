@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AddMt4VC">
+            <connections>
+                <outlet property="tableView" destination="HM4-EH-OOA" id="Ycy-ED-tuA"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="HM4-EH-OOA">
+                    <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <connections>
+                        <outlet property="dataSource" destination="-1" id="yhd-fS-gNZ"/>
+                        <outlet property="delegate" destination="-1" id="Vac-y4-rAe"/>
+                    </connections>
+                </tableView>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xpp-du-EvB">
+                    <rect key="frame" x="15" y="603" width="345" height="44"/>
+                    <color key="backgroundColor" red="0.2274509804" green="0.80000000000000004" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="44" id="U1x-DY-KOy"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                    <state key="normal" title="新建MT4账户">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </state>
+                </button>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="Q5M-cg-NOt" firstAttribute="bottom" secondItem="HM4-EH-OOA" secondAttribute="bottom" id="SI5-Nb-EGX"/>
+                <constraint firstItem="HM4-EH-OOA" firstAttribute="leading" secondItem="Q5M-cg-NOt" secondAttribute="leading" id="T7K-6d-bLM"/>
+                <constraint firstItem="Q5M-cg-NOt" firstAttribute="trailing" secondItem="HM4-EH-OOA" secondAttribute="trailing" id="TKB-qb-zvk"/>
+                <constraint firstItem="Q5M-cg-NOt" firstAttribute="trailing" secondItem="xpp-du-EvB" secondAttribute="trailing" constant="15" id="cWJ-Nb-943"/>
+                <constraint firstItem="Q5M-cg-NOt" firstAttribute="bottom" secondItem="xpp-du-EvB" secondAttribute="bottom" constant="20" id="qgG-yH-oVZ"/>
+                <constraint firstItem="HM4-EH-OOA" firstAttribute="top" secondItem="Q5M-cg-NOt" secondAttribute="top" id="t11-l6-RgP"/>
+                <constraint firstItem="xpp-du-EvB" firstAttribute="leading" secondItem="Q5M-cg-NOt" secondAttribute="leading" constant="15" id="z3s-TE-HiS"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="Q5M-cg-NOt"/>
+        </view>
+    </objects>
+</document>

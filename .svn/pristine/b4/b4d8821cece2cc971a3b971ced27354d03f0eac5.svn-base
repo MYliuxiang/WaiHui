@@ -1,0 +1,166 @@
+//
+//  AddBankVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/17.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "AddBankVC.h"
+
+@interface AddBankVC ()
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (strong, nonatomic) IBOutlet UIView *headerView;
+@property (strong, nonatomic) IBOutlet UIView *footerView;
+@property (nonatomic,strong) NSArray *dataList;
+@end
+
+@implementation AddBankVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.title = @"添加银行卡";
+    self.dataList = @[@"银行卡号",@"银行名称",@"开户行区域",@"开户行地址",@"手机号码",@"验证码"];
+    self.headerView.height = 40 + (kScreenWidth - 40) / 330 * 166;
+    self.footerView.height = 100 + 44;
+    self.tableView.tableHeaderView = self.headerView;
+    self.tableView.tableFooterView = self.footerView;
+}
+
+#pragma  mark --------UITableView Delegete----------
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.dataList.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    if (indexPath.row == 5 ) {
+        
+        static NSString *identifire = @"cellIDstart";
+        StartPwCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+        if (cell == nil) {
+            cell = [[NSBundle mainBundle] loadNibNamed:@"StartPwCell" owner:nil options:nil].lastObject;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+        }
+        
+        cell.nameLab.text = self.dataList[indexPath.row];
+        cell.textField.placeholder = @"输入验证码";
+        return cell;
+        
+    }else if(indexPath.row == 1 || indexPath.row == 2){
+        
+        static NSString *identifire = @"cellID";
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+        if (cell == nil) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:identifire];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 47.5, kScreenWidth, .5)];
+            view.backgroundColor = [MyColor colorWithHexString:@"#F1F1F8"];
+            [cell.contentView addSubview:view];
+        }
+        
+        cell.textLabel.text = self.dataList[indexPath.row];
+        cell.textLabel.font = [UIFont systemFontOfSize:14];
+        cell.textLabel.sd_layout.leftSpaceToView(cell.contentView, 15);
+        cell.textLabel.textColor = [MyColor colorWithHexString:@"#3D478B"];
+        
+        cell.detailTextLabel.textColor = [MyColor colorWithHexString:@"#747898"];
+        cell.detailTextLabel.font = [UIFont systemFontOfSize:14];
+        if (indexPath.row == 1 ) {
+            
+            cell.detailTextLabel.text = @"选择银行";
+        }else if(indexPath.row == 2){
+            
+            cell.detailTextLabel.text = @"选择区域";
+            
+            
+        }else{
+            cell.detailTextLabel.text = @"";
+            
+        }
+        
+        return cell;
+        
+    }else{
+    
+    static NSString *identifire = @"ResetCellID";
+    
+    ResetCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+    if (cell == nil) {
+        cell = [[NSBundle mainBundle] loadNibNamed:@"ResetCell" owner:nil options:nil].lastObject;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
+    }
+    if (indexPath.row == 0) {
+        cell.textField.text = @"";
+        cell.textField.placeholder = @"请输入银行卡号";
+        
+    }else if (indexPath.row == 3){
+        cell.textField.text = @"";
+        cell.textField.placeholder = @"输入开户行地址";
+        cell.textField.userInteractionEnabled = YES;
+        
+    }else {
+        cell.textField.text = @"";
+        cell.textField.placeholder = @"输入绑定银行卡号码";
+        cell.textField.userInteractionEnabled = YES;
+        
+    }
+    
+    cell.titleLab.text = self.dataList[indexPath.row];
+    return cell;
+    }
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 48;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    
+    return 10;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.1;
+    
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 10)];
+    view.backgroundColor = [MyColor colorWithHexString:@"#F7F9FE"];
+    return view;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    
+    
+}
+- (IBAction)doneAC:(id)sender {
+    
+    RealOrBankVC *vc = [RealOrBankVC new];
+    vc.successType = SuccessTypeReal; [self.navigationController pushViewController:vc animated:YES];
+}
+
+
+@end

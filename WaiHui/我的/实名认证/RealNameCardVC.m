@@ -1,0 +1,192 @@
+//
+//  RealNameCardVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/14.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "RealNameCardVC.h"
+
+@interface RealNameCardVC ()
+@property (weak, nonatomic) IBOutlet UIButton *firstBtn;
+@property (weak, nonatomic) IBOutlet UIButton *twoBtn;
+@property (weak, nonatomic) IBOutlet UIButton *upStepBtn;
+@property (weak, nonatomic) IBOutlet UIButton *doneBtn;
+@property (nonatomic,strong) UIImage *image1;
+@property (nonatomic,strong) UIImage *image2;
+@property (nonatomic,copy) NSString *image1Str;
+@property (nonatomic,copy) NSString *image2Str;
+
+
+
+
+@end
+
+@implementation RealNameCardVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.title = @"实名认证";
+    [self wr_setNavBarTitleColor:[MyColor colorWithHexString:@"#2E3145"]];
+    [self.firstBtn layoutButtonWithEdgeInsetsStyle:MKButtonEdgeInsetsStyleTop imageTitleSpace:10];
+    [self.twoBtn layoutButtonWithEdgeInsetsStyle:MKButtonEdgeInsetsStyleTop   imageTitleSpace:10];
+    
+    [self.doneBtn hyb_addCornerRadius:5 size:CGSizeMake(kScreenWidth - 30, 44)];
+    [self.upStepBtn hyb_addCornerRadius:5 size:CGSizeMake(kScreenWidth - 30, 44)];
+
+
+}
+
+- (IBAction)imagUpFirst:(id)sender {
+    
+    UIButton *btn = sender;
+    [ZZQAvatarPicker startSelected:^(UIImage * _Nonnull image) {
+        if (image) {
+            [sender setImage:nil forState:UIControlStateNormal];
+            [btn setTitle:@"" forState:UIControlStateNormal];
+            [btn setBackgroundImage:image forState:UIControlStateNormal];
+            self.image1 = image;
+        }
+    }];
+}
+- (IBAction)imageUpTwo:(id)sender {
+    
+    UIButton *btn = sender;
+    [ZZQAvatarPicker startSelected:^(UIImage * _Nonnull image) {
+        if (image) {
+            [sender setImage:nil forState:UIControlStateNormal];
+            [btn setTitle:@"" forState:UIControlStateNormal];
+            [btn setBackgroundImage:image forState:UIControlStateNormal];
+            self.image2 = image;
+        }
+    }];
+}
+
+
+- (IBAction)backAC:(id)sender {
+    [self.navigationController popViewControllerAnimated:YES];
+}
+- (IBAction)doneAC:(id)sender {
+    
+    if (self.image1 == nil) {
+        [SVProgressHUD showErrorWithStatus:@"请您先添加身份证正面照片！"];
+        return;
+    }
+    
+    if (self.image2 == nil) {
+        [SVProgressHUD showErrorWithStatus:@"请您先添加身份证反面照片！"];
+        return;
+    }
+    
+    
+    BAImageDataEntity *entity = [BAImageDataEntity new];
+    entity.urlString = [NSString stringWithFormat:@"%@",Url_ImagePost];
+    entity.imageType = @"jpg";
+    entity.imageArray = @[self.image1];
+    entity.imageScale = 0.7;
+    entity.fileNames = @[@"file"];
+    
+    [SVProgressHUD show];
+    [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeBlack];
+    
+    
+    
+    [BANetManager ba_setValue:[LxUserDefaults objectForKey:Token] forHTTPHeaderKey:@"Access-Token"];
+
+    [BANetManager ba_uploadImageWithEntity:entity successBlock:^(id response) {
+        NSDictionary *result = response;
+        if ([result[@"code"] intValue] == 1) {
+            //成功
+            self.image1Str = result[@"data"][@"url"];
+            [self nextLoadImg];
+            
+            
+        }else{
+            
+            [SVProgressHUD showErrorWithStatus:result[@"message"]];
+        }
+    } failurBlock:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:error.userInfo[@"NSDebugDescription"]];
+        [BANetManager ba_clearAuthorizationHeader];
+
+    } progressBlock:^(int64_t bytesProgress, int64_t totalBytesProgress) {
+
+    }];
+    
+    
+   
+}
+
+- (void)nextLoadImg
+{
+    BAImageDataEntity *entity = [BAImageDataEntity new];
+    entity.urlString = [NSString stringWithFormat:@"%@",Url_ImagePost];
+    entity.imageType = @"jpg";
+    entity.imageArray = @[self.image2];
+    entity.imageScale = 0.7;
+    entity.fileNames = @[@"file"];
+    
+    [BANetManager ba_setValue:[LxUserDefaults objectForKey:Token] forHTTPHeaderKey:@"Access-Token"];
+
+    [BANetManager ba_uploadImageWithEntity:entity successBlock:^(id response) {
+        NSDictionary *result = response;
+        [BANetManager ba_clearAuthorizationHeader];
+
+        if ([result[@"code"] intValue] == 1) {
+            //成功
+            self.image2Str = result[@"data"][@"url"];
+            [self updateLoad];
+            
+        }else{
+            
+            [SVProgressHUD showErrorWithStatus:result[@"message"]];
+        }
+    } failurBlock:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:error.userInfo[@"NSDebugDescription"]];
+        [BANetManager ba_clearAuthorizationHeader];
+
+
+    } progressBlock:^(int64_t bytesProgress, int64_t totalBytesProgress) {
+
+    }];
+    
+}
+
+- (void)updateLoad
+{
+    BADataEntity *entity = [BADataEntity new];
+    entity.urlString = [NSString stringWithFormat:@"%@%@",MainUrl,Url_MyCenter];
+    entity.needCache = NO;
+    entity.parameters = @{@"types":@"3",@"Access_Token":[LxUserDefaults objectForKey:Token],@"id_card_img1_fipath":self.image1Str,@"id_card_img2_fipath":self.image2Str,@"realname":self.realname,@"id_number":self.id_number,@"verify_type":@"1"};
+    [SVProgressHUD show];
+    [BANetManager ba_request_POSTWithEntity:entity successBlock:^(id response) {
+        NSDictionary *result = response;
+        if ([result[@"code"] intValue] == 1) {
+            //成功
+            [SVProgressHUD dismiss];
+            RealOrBankVC *vc = [RealOrBankVC new];
+            vc.successType = SuccessTypeReal; [self.navigationController pushViewController:vc animated:YES];
+            
+        }else{
+            
+            [SVProgressHUD showErrorWithStatus:result[@"message"]];
+            
+        }
+        
+        
+    } failureBlock:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:error.userInfo[@"NSDebugDescription"]];
+        
+        
+    } progressBlock:^(int64_t bytesProgress, int64_t totalBytesProgress) {
+        
+    }];
+    
+    
+}
+
+
+
+@end

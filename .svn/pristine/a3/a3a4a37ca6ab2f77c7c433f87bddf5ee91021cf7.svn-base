@@ -1,0 +1,162 @@
+//
+//  MyVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/6.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "MyVC.h"
+
+@interface MyVC ()
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (strong, nonatomic) IBOutlet UIView *headerV;
+@property (nonatomic,strong) NSArray *dataList;
+@property (weak, nonatomic) IBOutlet UIButton *realName;
+@property (weak, nonatomic) IBOutlet UIImageView *avatorImg;
+
+
+@end
+
+@implementation MyVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.title = @"我的";
+    self.fd_prefersNavigationBarHidden = YES;
+    self.headerV.height = kScreenWidth / 375 * 139;
+    self.tableView.tableHeaderView = self.headerV;
+    self.dataList = @[@[@"账户管理",@"银行卡管理",@"出入/金"],@[@"联系我们",@"设置"]];
+//    [self.realName lm_addCorner:10.5];
+//    [self.avatorImg lm_addCorner:22 borderWidth:4 borderColor:[UIColor redColor] backGroundColor:[UIColor whiteColor]];
+//    [self.avatorImg jm_setImageWithCornerRadius:22 borderColor:nil borderWidth:0 backgroundColor:nil];
+//    [self.realName jm_setImageWithCornerRadius:10.5 borderColor:nil borderWidth:0 backgroundColor:nil];
+    [self.realName hyb_addCornerRadius:10.5];
+    [self.avatorImg hyb_addCornerRadius:22];
+
+}
+
+
+
+
+#pragma  mark --------UITableView Delegete----------
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return self.dataList.count;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    NSArray *array = self.dataList[section];
+    return array.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    static NSString *identifire = @"cellID";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:identifire];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 47.5, kScreenWidth, .5)];
+        view.backgroundColor = [MyColor colorWithHexString:@"#F1F1F8"];
+        [cell.contentView addSubview:view];
+    }
+    
+    cell.textLabel.text = self.dataList[indexPath.section][indexPath.row];
+    cell.textLabel.font = [UIFont systemFontOfSize:14];
+    cell.textLabel.textColor = [MyColor colorWithHexString:@"#3D478B"];
+    
+    cell.detailTextLabel.textColor = [MyColor colorWithHexString:@"#F29360"];
+    cell.detailTextLabel.font = [UIFont systemFontOfSize:14];
+    if (indexPath.row == 0 && indexPath.section == 0) {
+        
+        cell.detailTextLabel.text = @"未开通真实账户";
+    }else if(indexPath.row == 1 && indexPath.section == 0){
+        
+        cell.detailTextLabel.text = @"未绑定";
+
+        
+    }else{
+        cell.detailTextLabel.text = @"";
+
+    }
+    
+    return cell;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 48;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    
+    return 10;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.1;
+    
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 10)];
+    view.backgroundColor = [MyColor colorWithHexString:@"#F7F9FE"];
+    return view;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    if (indexPath.section == 0) {
+        
+        if (indexPath.row == 0) {
+            //账户管理
+            AccountManagerVC *vc = [[AccountManagerVC alloc] init];
+            [self.navigationController pushViewController:vc animated:YES];
+        }else if(indexPath.row == 1){
+            //银行卡管理
+            BankMangerVC *vc = [[BankMangerVC alloc] init];
+            [self.navigationController pushViewController:vc animated:YES];
+        }else{
+            
+            //出入金
+            CashInOrOutVC *vc = [[CashInOrOutVC alloc] init];
+            [self.navigationController pushViewController:vc animated:YES];
+        }
+        
+    }else{
+        
+        if (indexPath.row == 0) {
+            //联系我们
+            ContactUsVC *vc = [[ContactUsVC alloc] init];
+            [self.navigationController pushViewController:vc animated:YES];
+        }else{
+            //设置
+            SetVC *vc = [[SetVC alloc] init];
+            [self.navigationController pushViewController:vc animated:YES];
+        }
+    }
+    
+    
+}
+
+
+- (IBAction)realnameAC:(id)sender {
+    
+    RealNameVC *vc = [RealNameVC new];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+@end

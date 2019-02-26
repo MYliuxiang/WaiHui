@@ -1,0 +1,18 @@
+//
+//  SeletedCell.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/10.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "SeletedCell.h"
+
+@implementation SeletedCell
+
+- (void)awakeFromNib {
+    [super awakeFromNib];
+    // Initialization code
+}
+
+@end

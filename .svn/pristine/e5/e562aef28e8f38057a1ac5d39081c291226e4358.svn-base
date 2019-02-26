@@ -1,0 +1,147 @@
+//
+//  ContractualattributesVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/7.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "ContractualattributesVC.h"
+
+@interface ContractualattributesVC ()<UITableViewDelegate,UITableViewDataSource>
+@property (strong, nonatomic) IBOutlet UIView *sectionHeader;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UILabel *nameLab;
+
+@property (nonatomic,strong) NSArray *dataList;
+@property (nonatomic,strong) NSArray *names;
+@end
+
+@implementation ContractualattributesVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.title = @"合约属性";
+    self.names = @[@"合约单位",@"基准货币",@"报价小数位",@"点差",@"单笔交易手数",@"最小挂单距离",@"手数差值",@"初始保证金",@"隔夜利息（买/卖）",@"三天利息日"];
+    
+    [self loadData];
+    
+}
+
+- (void)loadData
+{
+    BADataEntity *entity = [BADataEntity new];
+    entity.urlString = [NSString stringWithFormat:@"%@%@",MainUrl,Url_marketCentre];
+    entity.needCache = NO;
+    entity.parameters = @{@"types":@"5",@"symbol":self.symbol};
+    [SVProgressHUD show];
+    [SVProgressHUD setDefaultMaskType:SVProgressHUDMaskTypeBlack];
+    
+    [BANetManager ba_request_POSTWithEntity:entity successBlock:^(id response) {
+        NSDictionary *result = response;
+        if ([result[@"code"] intValue] == 1) {
+            //成功
+            [SVProgressHUD dismiss];
+            AttributesModel *model = [AttributesModel mj_objectWithKeyValues:result[@"data"]];
+            self.nameLab.text = [NSString stringWithFormat:@"%@(%@)",model.symbolName,model.symbol];
+            self.dataList = @[model.contract_size,model.currency,model.digits,model.spread,[NSString stringWithFormat:@"%@~%@",model.lot_min,model.lot_max],model.stops_level,model.lot_step,model.margin_initial,[NSString stringWithFormat:@"%@/%@",model.swap_long,model.swap_short],model.swap_rollover3days,];
+            
+            
+            [self.tableView reloadData];
+            
+        }else{
+            
+            [SVProgressHUD showErrorWithStatus:result[@"message"]];
+            
+        }
+        
+        
+    } failureBlock:^(NSError *error) {
+        [SVProgressHUD showErrorWithStatus:error.userInfo[@"NSDebugDescription"]];
+        
+        
+    } progressBlock:^(int64_t bytesProgress, int64_t totalBytesProgress) {
+        
+    }];
+    
+}
+
+#pragma  mark --------UITableView Delegete----------
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 10;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    static NSString *identifire = @"cellID";
+    ContractualCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+    if (cell == nil) {
+        cell = [[[NSBundle mainBundle] loadNibNamed:@"ContractualCell" owner:nil options:nil] lastObject];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
+    }
+    if (indexPath.row % 2 == 0) {
+        cell.backgroundColor = [UIColor whiteColor];
+
+    }else{
+        cell.backgroundColor = [MyColor colorWithHexString:@"#FAFBFE"];
+    }
+    cell.nameLab.text = self.names[indexPath.row];
+    cell.valueLab.text = self.dataList[indexPath.row];
+    
+    
+    return cell;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 44;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    
+    return 47;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.1;
+    
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    
+    return self.sectionHeader;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    
+    
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

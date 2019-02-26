@@ -1,0 +1,24 @@
+//
+//  QSearchVC.h
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/10.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "BaseViewController.h"
+#import "QSearchTCell.h"
+#import "CXSearchCollectionViewCell.h"
+#import "SelectCollectionLayout.h"
+#import "SelectCollectionReusableView.h"
+#import "QSearchTwoCell.h"
+#import "NotHisCell.h"
+#import "NetLodingCell.h"
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface QSearchVC : BaseViewController<UITableViewDelegate,UITableViewDataSource,SelectCollectionCellDelegate,UICollectionReusableViewButtonDelegate>
+
+@end
+
+NS_ASSUME_NONNULL_END

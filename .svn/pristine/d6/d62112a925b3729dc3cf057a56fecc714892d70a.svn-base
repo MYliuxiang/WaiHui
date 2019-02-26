@@ -1,0 +1,13 @@
+//
+//  Mt4Model.m
+//  WaiHui
+//
+//  Created by liuxiang on 2019/1/7.
+//  Copyright © 2019年 faxian. All rights reserved.
+//
+
+#import "Mt4Model.h"
+
+@implementation Mt4Model
+
+@end

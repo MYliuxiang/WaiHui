@@ -1,0 +1,27 @@
+//
+//  TermofvalidityAlert.h
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/10.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "LxCustomAlert.h"
+#import "TermoCell.h"
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface TermofvalidityAlert : LxCustomAlert<UITableViewDelegate,UITableViewDataSource>
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (nonatomic,strong) NSArray *titles;
+@property (nonatomic,assign) int *seletedIndex;
+
+
+- (instancetype)initTermofvalidityAlert;
+
+@end
+
+NS_ASSUME_NONNULL_END
+
+
+

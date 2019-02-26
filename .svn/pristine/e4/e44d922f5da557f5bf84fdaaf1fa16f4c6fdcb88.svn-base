@@ -1,0 +1,23 @@
+//
+//  MyVC.h
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/6.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "BaseViewController.h"
+#import "ContactUsVC.h"
+#import "SetVC.h"
+#import "AccountManagerVC.h"
+#import "BankMangerVC.h"
+#import "CashInOrOutVC.h"
+#import "RealNameVC.h"
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface MyVC : BaseViewController<UITableViewDelegate,UITableViewDataSource>
+
+@end
+
+NS_ASSUME_NONNULL_END

@@ -1,0 +1,166 @@
+//
+//  QuotationVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/6.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "QuotationVC.h"
+#import "QuotationListVC.h"
+#import "QSearchVC.h"
+
+@interface QuotationVC ()<JXCategoryViewDelegate>
+@property (nonatomic, strong) JXCategoryTitleView *categoryView;
+@property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, strong) NSMutableArray <QuotationListVC *> *listVCArray;
+@property (nonatomic, strong) JXCategoryListVCContainerView *listVCContainerView;
+@end
+
+@implementation QuotationVC
+
+- (void)viewDidLoad {
+
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.navigationItem.title = @"行情";
+    self.view.backgroundColor = [UIColor whiteColor];
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+    
+    self.rightBtnImage = @"icon_search";
+
+    
+    NSLog(@"%f",[WRNavigationBar navBarBottom]);
+    CGFloat naviHeight = [UIApplication.sharedApplication.keyWindow jx_navigationHeight];
+    
+
+    NSArray *titles = @[@"外汇",@"商品",@"指数",@"数字货币",@"商品",@"指数",@"数字货币"];
+    NSUInteger count = titles.count;
+    CGFloat categoryViewHeight = 40;
+    CGFloat width = kScreenWidth;
+    CGFloat height = kScreenHeight - naviHeight - categoryViewHeight;
+
+    self.listVCArray = [NSMutableArray array];
+
+    for (int i = 0; i < count; i ++) {
+    
+        QuotationListVC *listVC = [[QuotationListVC alloc] init];
+    
+        listVC.view.frame = CGRectMake(i*width, 0, width, height);
+    
+        [self.listVCArray addObject:listVC];
+        [self addChildViewController:listVC];
+
+    }
+
+      self.categoryView = [[JXCategoryTitleView alloc] init];
+      self.categoryView.frame = CGRectMake(0, 0, kScreenWidth, categoryViewHeight);
+      self.categoryView.delegate = self;
+      self.categoryView.titles = titles;
+      self.categoryView.titleColor = [MyColor colorWithHexString:@"#858296"];
+      self.categoryView.titleSelectedColor = [MyColor colorWithHexString:@"#2B2B76"];
+    self.categoryView.titleFont = [UIFont systemFontOfSize:14];
+    JXCategoryIndicatorLineView *lineView = [[JXCategoryIndicatorLineView alloc] init];
+    lineView.indicatorLineViewColor = [MyColor colorWithHexString:@"#2B2B76"];
+    lineView.lineStyle = JXCategoryIndicatorLineStyle_JD;
+    lineView.indicatorLineViewCornerRadius = 0;
+    lineView.lineScrollOffsetX = 5;
+    self.categoryView.indicators = @[lineView];
+    [self.view addSubview:self.categoryView];
+
+    self.listVCContainerView = [[JXCategoryListVCContainerView alloc] initWithFrame:CGRectMake(0, categoryViewHeight, width, kScreenHeight - Height_NavBar - categoryViewHeight - Height_TabBar)];
+    self.listVCContainerView.defaultSelectedIndex = 0;
+    self.categoryView.defaultSelectedIndex = 0;
+    self.listVCContainerView.listVCArray = self.listVCArray;
+    [self.view addSubview:self.listVCContainerView];
+
+    self.categoryView.contentScrollView = self.listVCContainerView.scrollView;   
+    
+}
+
+//这句代码必须加上
+- (BOOL)shouldAutomaticallyForwardAppearanceMethods {
+    return NO;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+        [self.listVCContainerView parentVCWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    self.navigationController.interactivePopGestureRecognizer.enabled = (self.categoryView.selectedIndex == 0);
+    
+    [self.listVCContainerView parentVCDidAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+        [self.listVCContainerView parentVCWillDisappear:animated];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
+        [self.listVCContainerView parentVCDidDisappear:animated];
+}
+
+- (void)doRightNavBarRightBtnAction
+{
+    QSearchVC *vc = [[QSearchVC alloc] init];
+    [self.navigationController pushViewController:vc animated:YES];
+    
+}
+
+
+#pragma mark - JXCategoryViewDelegate
+
+- (void)categoryView:(JXCategoryBaseView *)categoryView didSelectedItemAtIndex:(NSInteger)index {
+    //侧滑手势处理
+    self.navigationController.interactivePopGestureRecognizer.enabled = (index == 0);
+//    [self.listVCArray[index] loadDataForFirst];
+}
+
+- (void)categoryView:(JXCategoryBaseView *)categoryView didClickSelectedItemAtIndex:(NSInteger)index {
+    [self.listVCContainerView didClickSelectedItemAtIndex:index];
+}
+
+- (void)categoryView:(JXCategoryBaseView *)categoryView didScrollSelectedItemAtIndex:(NSInteger)index {
+    [self.listVCContainerView didScrollSelectedItemAtIndex:index];
+}
+
+- (void)categoryView:(JXCategoryBaseView *)categoryView scrollingFromLeftIndex:(NSInteger)leftIndex toRightIndex:(NSInteger)rightIndex ratio:(CGFloat)ratio {
+        [self.listVCContainerView scrollingFromLeftIndex:leftIndex toRightIndex:rightIndex ratio:ratio];
+}
+
+
+@end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

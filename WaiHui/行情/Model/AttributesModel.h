@@ -1,0 +1,34 @@
+//
+//  AttributesModel.h
+//  WaiHui
+//
+//  Created by liuxiang on 2019/1/18.
+//  Copyright © 2019年 faxian. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface AttributesModel : NSObject
+@property (nonatomic,copy) NSString *symbol;
+@property (nonatomic,copy) NSString *symbolName;
+@property (nonatomic,copy) NSString *lot_step;
+@property (nonatomic,copy) NSString *lot_max;
+@property (nonatomic,copy) NSString *lot_min;
+@property (nonatomic,copy) NSString *swap_short;
+@property (nonatomic,copy) NSString *swap_long;
+@property (nonatomic,copy) NSString *stops_level;
+@property (nonatomic,copy) NSString *price;
+@property (nonatomic,copy) NSString *spread;
+@property (nonatomic,copy) NSString *swap_rollover3days;
+@property (nonatomic,copy) NSString *margin_initial;
+@property (nonatomic,copy) NSString *currency;
+@property (nonatomic,copy) NSString *digits;
+@property (nonatomic,copy) NSString *contract_size;
+@property (nonatomic,copy) NSString *tradeTime;
+
+
+@end
+
+NS_ASSUME_NONNULL_END

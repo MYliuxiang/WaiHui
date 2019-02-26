@@ -1,0 +1,28 @@
+//
+//  HoldCell.h
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/11.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface HoldCell : UITableViewCell
+@property (weak, nonatomic) IBOutlet UIButton *hqBtn;
+@property (weak, nonatomic) IBOutlet UIButton *pcBtn;
+@property (weak, nonatomic) IBOutlet UIButton *szBtn;
+@property (weak, nonatomic) IBOutlet UILabel *zyLab;
+
+@property (weak, nonatomic) IBOutlet UIView *btnView;
+@property (strong, nonatomic) HoldModel *model;
+@property (nonatomic,copy) void(^hqBlock)(HoldModel *model);
+@property (nonatomic,copy) void(^pcBlock)(HoldModel *model);
+@property (nonatomic,copy) void(^szBlock)(HoldModel *model);
+
+
+@end
+
+NS_ASSUME_NONNULL_END

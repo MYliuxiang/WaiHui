@@ -1,0 +1,133 @@
+//
+//  HoldPositionsVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/11.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "HoldPositionsVC.h"
+
+@interface HoldPositionsVC ()<JXPagerViewListViewDelegate,UITableViewDataSource,UITableViewDelegate>
+
+@property(nonatomic,retain) NSMutableArray *dataList;
+
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+
+@property (nonatomic, copy) void(^scrollCallback)(UIScrollView *scrollView);
+
+
+@end
+
+@implementation HoldPositionsVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+
+
+    self.dataList = [NSMutableArray array];
+    for (int i = 0; i < 10; i++) {
+        HoldModel *model = [[HoldModel alloc] init];
+        [self.dataList addObject:model];
+    }
+
+    
+}
+
+#pragma  mark --------UITableView Delegete----------
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.dataList.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+
+    static NSString *identifire = @"cellID";
+    HoldCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+    if (cell == nil) {
+        cell = [[[NSBundle mainBundle] loadNibNamed:@"HoldCell" owner:nil options:nil] lastObject];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    }
+
+    cell.model = self.dataList[indexPath.row];
+    
+    cell.hqBlock = ^(HoldModel * _Nonnull model) {
+        //行情
+    };
+    
+    cell.pcBlock = ^(HoldModel * _Nonnull model) {
+        //平仓
+        ClosePositionDetailVC *vc = [[ClosePositionDetailVC alloc] init];
+        [self.navigationController pushViewController:vc animated:YES];
+    };
+    
+    cell.szBlock = ^(HoldModel * _Nonnull model) {
+        //设置
+        SetLossVC *vc = [[SetLossVC alloc] init];
+        [self.navigationController pushViewController:vc animated:YES];
+        
+    };
+
+    return cell;
+
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    HoldModel *model = self.dataList[indexPath.row];
+    return [self.tableView cellHeightForIndexPath:indexPath model:model keyPath:@"model" cellClass:[HoldCell class] contentViewWidth:kScreenWidth];;
+
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+
+    return 0.1;
+
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.1;
+
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    HoldModel *model = self.dataList[indexPath.row];
+    model.isOpen = !model.isOpen;
+    [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+    if(indexPath.row == self.dataList.count - 1){
+        [tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    }
+
+
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    !self.scrollCallback ?: self.scrollCallback(scrollView);
+}
+
+#pragma mark - JXPagingViewListViewDelegate
+- (UIView *)listView {
+    return self.view;
+}
+
+
+- (UIScrollView *)listScrollView {
+    return self.tableView;
+}
+
+
+- (void)listViewDidScrollCallback:(void (^)(UIScrollView *))callback {
+    self.scrollCallback = callback;
+}
+
+@end

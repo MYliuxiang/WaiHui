@@ -1,0 +1,19 @@
+//
+//  ContractualCell.h
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/7.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface ContractualCell : UITableViewCell
+@property (weak, nonatomic) IBOutlet UILabel *nameLab;
+@property (weak, nonatomic) IBOutlet UILabel *valueLab;
+@property (nonatomic,copy) NSString *identifire;
+@end
+
+NS_ASSUME_NONNULL_END

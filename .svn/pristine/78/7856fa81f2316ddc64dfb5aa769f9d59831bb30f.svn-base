@@ -1,0 +1,154 @@
+//
+//  ChangeOrderVC.m
+//  WaiHui
+//
+//  Created by liuxiang on 2018/12/13.
+//  Copyright © 2018年 faxian. All rights reserved.
+//
+
+#import "ChangeOrderVC.h"
+
+@interface ChangeOrderVC ()
+@property (strong, nonatomic) IBOutlet UIView *headerView;
+@property (weak, nonatomic) IBOutlet UITableView *tableview;
+@property (strong, nonatomic) IBOutlet UIView *footerView;
+
+@end
+
+@implementation ChangeOrderVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.title = @"改单";
+    [self wr_setNavBarShadowImageHidden:YES];
+    self.footerView.height = 130;
+    self.tableview.tableFooterView = self.footerView;
+    
+}
+
+
+#pragma  mark --------UITableView Delegete----------
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 6;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == 0) {
+        static NSString *identifire = @"ChangeCellID";
+        ChangeCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+        if (cell == nil) {
+            cell = [[[NSBundle mainBundle] loadNibNamed:@"ChangeCell" owner:nil options:nil] lastObject];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+        }
+        
+        return cell;
+    }else if(indexPath.row == 2){
+        
+        static NSString *identifire = @"PriceOneCellID";
+        PriceOneCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+        if (cell == nil) {
+            cell = [[[NSBundle mainBundle] loadNibNamed:@"PriceOneCell" owner:nil options:nil] lastObject];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+        }
+        
+        return cell;
+       
+    }else if(indexPath.row == 4){
+        
+        static NSString *identifire = @"PriceTwoCellID";
+        PriceTwoCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+        if (cell == nil) {
+            cell = [[[NSBundle mainBundle] loadNibNamed:@"PriceTwoCell" owner:nil options:nil] lastObject];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+        }
+        
+        return cell;
+       
+    }else{
+        
+        
+        static NSString *identifire = @"PriceCellID";
+        PriceCell *cell = [tableView dequeueReusableCellWithIdentifier:identifire];
+        if (cell == nil) {
+            cell = [[[NSBundle mainBundle] loadNibNamed:@"PriceCell" owner:nil options:nil] lastObject];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+        }
+        
+        return cell;
+       
+       
+        
+    }
+    
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == 0) {
+        return 96;
+    }else if (indexPath.row == 2){
+        
+        return 75;
+    }
+    return 48;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    
+    return 32;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.1;
+    
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 32)];
+    view.backgroundColor = [MyColor colorWithHexString:@"#FAFBFE"];
+    
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(15, 0,30, 32)];
+    label.text = @"欧元美元";
+    label.font = [UIFont systemFontOfSize:12];
+    label.textColor = [MyColor colorWithHexString:@"#2B2B76"];
+    [view addSubview:label];
+    [label sizeToFit];
+    label.centerY = view.centerY;
+    
+    UILabel *label1 = [[UILabel alloc] initWithFrame:CGRectMake(label.right + 5, 0,30, 32)];
+    label1.text = @"欧元美元";
+    label1.font = [UIFont systemFontOfSize:10];
+    label1.textColor = [MyColor colorWithHexString:@"#9EA3C6"];
+    [view addSubview:label1];
+    [label1 sizeToFit];
+    label1.centerY = view.centerY;
+
+    return view;
+    
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    
+    
+}
+@end
